@@ -1,0 +1,5 @@
+# Meson project options
+
+# Use ILP64 BLAS/LAPACK interface (64-bit integers for sizes at the BLAS/LAPACK boundary)
+option('ilp64', type: 'boolean', value: false,
+  description: 'Use ILP64 BLAS/LAPACK interface (64-bit integers for sizes)')
