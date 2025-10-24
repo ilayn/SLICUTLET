@@ -1,0 +1,70 @@
+[build-system]
+requires = [
+    "meson-python",
+    "Cython>=3.0",
+    "numpy>=2.0",
+]
+build-backend = "mesonpy"
+
+[project]
+name = "slicutlet"
+version = "0.0.1"
+description = "Python bindings for SLICUTLET, C translations for SLICOT"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "BSD-3-Clause"}
+authors = [
+    {name = "SLICUTLET Contributors"},
+]
+keywords = ["control", "slicot", "linear-algebra", "systems"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: C",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "numpy>=2.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-cov",
+    "hypothesis>=6.0",
+]
+dev = [
+    "cython>=3.0",
+    "ruff",
+]
+
+[project.urls]
+Homepage = "https://github.com/ilayn/SLICUTLET"
+Repository = "https://github.com/ilayn/SLICUTLET"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+]
+testpaths = ["python/tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+ignore = ["E501"]  # line too long (handled by formatter)

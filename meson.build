@@ -8,6 +8,9 @@ project('SLICUTLET', 'c',
 
 cc = meson.get_compiler('c')
 inc_src = include_directories('src/include')
+inc_pub = include_directories('include/SLICUTLET')
+inc_pub_root = include_directories('include')
+dep_m = cc.find_library('m', required: false)
 
 # Verify complex ABI early: c128 must be two f64s (COMPLEX*16 layout)
 code_c128_check = '''
@@ -121,6 +124,7 @@ if (not have_lapack) and dep_blas.found()
 endif
 
 # Generate a private config header with detected options. This header lives in the build dir.
+# Generate a private config header with detected options. This lands in the build root.
 cfg_h = configure_file(
   input: 'src/include/slc_config.h.in',
   output: 'slc_config.h',
@@ -144,3 +148,59 @@ if have_lapack
   lapack_msg = 'true' + (lapack_via_blas and dep_blas.found() and (not dep_lapack.found()) ? ' (provided by BLAS dep)' : '')
 endif
 message('  LAPACK found: ' + lapack_msg)
+
+# Build the core library from the translated C sources
+lib_srcs = files(
+  'src/A/ab07nd.c',
+  'src/M/mb03oy.c',
+  'src/M/mc01td.c',
+)
+
+inc_root = include_directories('.')
+
+deps_common = deps_blaslapack
+if dep_m.found()
+  deps_common += dep_m
+endif
+
+slicutlet_lib = library(
+  'slicutlet',
+  lib_srcs,
+  include_directories: [inc_src, inc_pub, inc_root],
+  dependencies: deps_common,
+  version: meson.project_version(),
+  install: true,
+)
+
+# Install public headers
+install_headers('include/SLICUTLET/slicutlet.h', subdir: 'SLICUTLET')
+install_headers('src/include/types.h',            subdir: 'SLICUTLET')
+
+# Generate a pkg-config file for downstreams
+pkgc = import('pkgconfig')
+pkgc.generate(
+  libraries: slicutlet_lib,
+  version: meson.project_version(),
+  name: 'slicutlet',
+  description: 'SLICOT C translations (early preview)',
+  filebase: 'slicutlet',
+  subdirs: ['SLICUTLET'],
+  requires: deps_blaslapack,
+  libraries_private: dep_m.found() ? [dep_m] : [],
+)
+
+# Minimal smoke test executable
+test_exe = executable(
+  'test_slicutlet',
+  'src/B/test_slicutlet.c',
+  include_directories: [inc_pub, inc_src, inc_root],
+  link_with: slicutlet_lib,
+  dependencies: deps_common,
+)
+
+test('smoke', test_exe)
+
+# Python bindings (optional)
+if get_option('python')
+  subdir('python')
+endif
