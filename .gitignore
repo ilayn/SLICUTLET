@@ -53,3 +53,89 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Editor temporary/working/backup files
+.#*
+[#]*#
+*~
+*$
+*.bak
+.idea/
+*.kdev4
+*.org
+.project
+.pydevproject
+*.rej
+.settings/
+.spyproject/
+.*.sw[nop]
+.sw[nop]
+*.tmp
+*.vim
+tags
+.venv/
+venv/
+.theia/
+.vscode/
+
+# Compiled source
+*.a
+*.com
+*.class
+*.l[ao]
+*.o.d
+*.py[ocd]
+*.so
+_configtest.c
+
+# Packages
+*.7z
+*.bz2
+*.bzip2
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.tbz2
+*.tgz
+*.zip
+
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# pytest cache
+.cache/
+.pytest_cache/
+
+# GitHub cache #
+################
+gh_cache.json
+
+# mypy cache #
+##############
+.mypy_cache/
+
+# linter
+.ruff_cache/
+.pre-commit-workdir/
+
+# Patches
+*.patch
+*.diff
+
+# OS generated files
+.directory
+.fseventsd
+.DS_Store*
+.gdb_history
+.VolumeIcon.icns
+ehthumbs.db
+Icon?
+Thumbs.db
+*.dSYM
+
