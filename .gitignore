@@ -1,3 +1,15 @@
+# Meson build directories
+build*/
+
+# Meson-generated files in tree (if any)
+meson-private/
+meson-logs/
+
+# Editor/OS noise
+*.swp
+*.swo
+*.DS_Store
+*.log
 # Prerequisites
 *.d
 

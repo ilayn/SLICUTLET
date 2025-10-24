@@ -1,0 +1,2 @@
+option('python', type: 'boolean', value: false,
+       description: 'Build Python extension module')

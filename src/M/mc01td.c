@@ -68,7 +68,7 @@ mc01td(
         // To apply [3], section 6.8, on the reciprocal of polynomial
         // P(x), the elements of the array P are copied in DWORK in reverse order.
         i32 ncp = *dp + 1;
-        SLC_DCOPY(&ncp, p, &int1, &dwork[*dp], &intm1);
+        SLC_DCOPY(&ncp, p, &int1, dwork, &intm1);
 
         //                                                           K-1
         //        DWORK(K),...,DWORK(DP+1), are the coefficients of T   P(x)
