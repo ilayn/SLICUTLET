@@ -69,6 +69,7 @@ typedef int32_t lapack_logical;
  */
 
 // BLAS routines
+void   SLC_F77_FUNC(dcopy, DCOPY)(int* n, f64* dx, int* incx, f64* dy, int* incy);
 void   SLC_F77_FUNC(dscal, DSCAL)(int* n, f64* a, f64* x, int* incx);
 void   SLC_F77_FUNC(dswap, DSWAP)(int* n, f64* x, int* incx, f64* y, int* incy);
 f64    SLC_F77_FUNC(dnrm2, DNRM2)(int* n, f64* x, int* incx);
@@ -87,6 +88,7 @@ void   SLC_F77_FUNC(dlacpy, DLACPY)(char* uplo, int* m, int* n, f64* a, int* lda
 void   SLC_F77_FUNC(dlarf, DLARF)(char* side, int* m, int* n, f64* v, int* incv, f64* tau, f64* c, int* ldc, f64* work);
 void   SLC_F77_FUNC(dlarfg, DLARFG)(int* n, f64* alpha, f64* x, int* incx, f64* tau);
 void   SLC_F77_FUNC(dlaic1, DLAIC1)(int* job, int* j, f64* x, f64* sest, f64* w, f64* gamma, f64* sestpr, f64* s, f64* c);
+void   SLC_F77_FUNC(drscl, DRSCL)(int* n, f64* sa, f64* sx, int* incx);
 void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack_logical (*selctg)(f64*, f64*, f64*), int* n, f64* a, int* lda, f64* b, int* ldb, int* sdim, f64* alphar, f64* alphai, f64* beta, f64* vsl, int* ldvsl, f64* vsr, int* ldvsr, f64* work, int* lwork, lapack_logical* bwork, int* info);
 
 /**
@@ -103,6 +105,7 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 
 
 /* Simple alias macros for use at call sites */
+#define SLC_DCOPY   SLC_F77_FUNC(dcopy, DCOPY)
 #define SLC_DGEMM   SLC_F77_FUNC(dgemm,  DGEMM)
 #define SLC_ZGEMM   SLC_F77_FUNC(zgemm,  ZGEMM)
 #define SLC_DGEMV   SLC_F77_FUNC(dgemv,  DGEMV)
@@ -119,6 +122,7 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 #define SLC_DLARF   SLC_F77_FUNC(dlarf,  DLARF)
 #define SLC_DLARFG  SLC_F77_FUNC(dlarfg, DLARFG)
 #define SLC_DLAIC1  SLC_F77_FUNC(dlaic1, DLAIC1)
+#define SLC_DRSCL   SLC_F77_FUNC(drscl,  DRSCL)
 
 #define SLC_DGGES   SLC_F77_FUNC(dgges,  DGGES)
 
