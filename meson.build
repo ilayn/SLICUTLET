@@ -153,6 +153,7 @@ message('  LAPACK found: ' + lapack_msg)
 lib_srcs = files(
   'src/A/ab04md.c',
   'src/A/ab05md.c',
+  'src/A/ab05nd.c',
   'src/A/ab07nd.c',
   'src/M/mb03oy.c',
   'src/M/mc01td.c',
