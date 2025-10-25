@@ -37,7 +37,7 @@ class TestMB01PDScale:
         a = np.array([[1e300, 2e300],
                       [3e300, 4e300]], dtype=np.float64, order='F')
         anrm = 1e300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -58,7 +58,7 @@ class TestMB01PDScale:
                       [2e-300, 3e-300, 0.0],
                       [4e-300, 5e-300, 6e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -81,7 +81,7 @@ class TestMB01PDScale:
                       [0.0, 4e-300, 5e-300],
                       [0.0, 0.0, 6e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -105,7 +105,7 @@ class TestMB01PDScale:
                       [3.0, 4.0]], dtype=np.float64, order='F')
         a_orig = a.copy()
         anrm = 2.5  # In safe range
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -126,7 +126,7 @@ class TestMB01PDUnscale:
         a_orig = np.array([[1e-300, 2e-300],
                            [3e-300, 4e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         # First scale
@@ -148,7 +148,7 @@ class TestMB01PDUnscale:
                            [2e-300, 3e-300, 0.0],
                            [4e-300, 5e-300, 6e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         # Scale then unscale
@@ -168,7 +168,7 @@ class TestMB01PDEdgeCases:
         m, n = 0, 0
         a = np.array([], dtype=np.float64, order='F').reshape(0, 0)
         anrm = 1.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -186,7 +186,7 @@ class TestMB01PDEdgeCases:
                       [3.0, 4.0]], dtype=np.float64, order='F')
         a_orig = a.copy()
         anrm = 0.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -203,7 +203,7 @@ class TestMB01PDEdgeCases:
         m, n = 1, 1
         a = np.array([[1e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
@@ -221,7 +221,7 @@ class TestMB01PDEdgeCases:
                       [3e-300, 4e-300],
                       [5e-300, 6e-300]], dtype=np.float64, order='F')
         anrm = 1e-300
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01pd(
