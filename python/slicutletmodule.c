@@ -307,11 +307,63 @@ static PyObject* py_mc01td(PyObject* self, PyObject* args) {
                          nz[0], dp[0], iwarn[0], info[0]);
 }
 
+static PyObject* py_mb01pd(PyObject* self, PyObject* args) {
+    (void)self;
+    int scun, type, m, n, kl, ku, nbl;
+    double anrm;
+    PyArrayObject *nrows_obj, *a_obj;
+
+    if (!PyArg_ParseTuple(args, "iiiiiidiO!O!",
+                          &scun, &type, &m, &n, &kl, &ku, &anrm, &nbl,
+                          &PyArray_Type, (PyObject **)&nrows_obj,
+                          &PyArray_Type, (PyObject **)&a_obj)) {
+        return NULL;
+    }
+
+    i32 *nrows = (i32*)PyArray_DATA(nrows_obj);
+    f64 *a = (f64*)PyArray_DATA(a_obj);
+
+    npy_intp *a_dims = PyArray_DIMS(a_obj);
+    i32 lda = (i32)(a_dims[0] > 0 ? a_dims[0] : 1);
+
+    i32 info;
+    mb01pd(scun, type, m, n, kl, ku, anrm, nbl, nrows, a, lda, &info);
+
+    return Py_BuildValue("Oi", a_obj, info);
+}
+
+static PyObject* py_mb01qd(PyObject* self, PyObject* args) {
+    (void)self;
+    int type, m, n, kl, ku, nbl;
+    double cfrom, cto;
+    PyArrayObject *nrows_obj, *a_obj;
+
+    if (!PyArg_ParseTuple(args, "iiiiiddiO!O!",
+                          &type, &m, &n, &kl, &ku, &cfrom, &cto, &nbl,
+                          &PyArray_Type, (PyObject **)&nrows_obj,
+                          &PyArray_Type, (PyObject **)&a_obj)) {
+        return NULL;
+    }
+
+    i32 *nrows = (i32*)PyArray_DATA(nrows_obj);
+    f64 *a = (f64*)PyArray_DATA(a_obj);
+
+    npy_intp *a_dims = PyArray_DIMS(a_obj);
+    i32 lda = (i32)(a_dims[0] > 0 ? a_dims[0] : 1);
+
+    i32 info;
+    mb01qd(type, m, n, kl, ku, cfrom, cto, nbl, nrows, a, lda, &info);
+
+    return Py_BuildValue("Oi", a_obj, info);
+}
+
 static PyMethodDef module_methods[] = {
     {"py_ab04md", py_ab04md, METH_VARARGS, "Wrapper for ab04md"},
     {"py_ab05md", py_ab05md, METH_VARARGS, "Wrapper for ab05md"},
     {"py_ab05nd", py_ab05nd, METH_VARARGS, "Wrapper for ab05nd"},
     {"py_ab07nd", py_ab07nd, METH_VARARGS, "Wrapper for ab07nd"},
+    {"py_mb01pd", py_mb01pd, METH_VARARGS, "Wrapper for mb01pd"},
+    {"py_mb01qd", py_mb01qd, METH_VARARGS, "Wrapper for mb01qd"},
     {"py_mb03oy", py_mb03oy, METH_VARARGS, "Wrapper for mb03oy"},
     {"py_mc01td", py_mc01td, METH_VARARGS, "Wrapper for mc01td"},
     {NULL, NULL, 0, NULL}

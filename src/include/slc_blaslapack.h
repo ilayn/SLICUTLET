@@ -94,6 +94,8 @@ void   SLC_F77_FUNC(dlarfg, DLARFG)(int* n, f64* alpha, f64* x, int* incx, f64* 
 void   SLC_F77_FUNC(dlaic1, DLAIC1)(int* job, int* j, f64* x, f64* sest, f64* w, f64* gamma, f64* sestpr, f64* s, f64* c);
 void   SLC_F77_FUNC(drscl, DRSCL)(int* n, f64* sa, f64* sx, int* incx);
 void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack_logical (*selctg)(f64*, f64*, f64*), int* n, f64* a, int* lda, f64* b, int* ldb, int* sdim, f64* alphar, f64* alphai, f64* beta, f64* vsl, int* ldvsl, f64* vsr, int* ldvsr, f64* work, int* lwork, lapack_logical* bwork, int* info);
+f64    SLC_F77_FUNC(dlamch, DLAMCH)(char* cmach);
+void   SLC_F77_FUNC(dlabad, DLABAD)(f64* small, f64* large);
 
 /**
  * End of evil hack.
@@ -133,6 +135,8 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 #define SLC_DRSCL   SLC_F77_FUNC(drscl,  DRSCL)
 
 #define SLC_DGGES   SLC_F77_FUNC(dgges,  DGGES)
+#define SLC_DLAMCH  SLC_F77_FUNC(dlamch, DLAMCH)
+#define SLC_DLABAD  SLC_F77_FUNC(dlabad, DLABAD)
 
 #ifdef __cplusplus
 } /* extern "C" */
