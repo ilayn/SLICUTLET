@@ -155,6 +155,8 @@ lib_srcs = files(
   'src/A/ab05md.c',
   'src/A/ab05nd.c',
   'src/A/ab07nd.c',
+  'src/M/mb01pd.c',
+  'src/M/mb01qd.c',
   'src/M/mb03oy.c',
   'src/M/mc01td.c',
 )
