@@ -18,7 +18,7 @@ class TestMB01QDFullMatrix:
                       [4.0, 5.0, 6.0],
                       [7.0, 8.0, 9.0]], dtype=np.float64, order='F')
         cfrom, cto = 2.0, 6.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -39,7 +39,7 @@ class TestMB01QDFullMatrix:
         a = np.array([[10.0, 20.0],
                       [30.0, 40.0]], dtype=np.float64, order='F')
         cfrom, cto = 4.0, 1.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -60,7 +60,7 @@ class TestMB01QDFullMatrix:
                       [3.0, 4.0],
                       [5.0, 6.0]], dtype=np.float64, order='F')
         cfrom, cto = 1.0, 10.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -84,7 +84,7 @@ class TestMB01QDTriangular:
                       [2.0, 3.0, 0.0],
                       [4.0, 5.0, 6.0]], dtype=np.float64, order='F')
         cfrom, cto = 1.0, 2.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -106,7 +106,7 @@ class TestMB01QDTriangular:
                       [0.0, 4.0, 5.0],
                       [0.0, 0.0, 6.0]], dtype=np.float64, order='F')
         cfrom, cto = 2.0, 4.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -129,7 +129,7 @@ class TestMB01QDTriangular:
                       [0.0, 9.0, 10.0, 11.0],
                       [0.0, 0.0, 12.0, 13.0]], dtype=np.float64, order='F')
         cfrom, cto = 1.0, 3.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -154,7 +154,7 @@ class TestMB01QDOverflow:
         a = np.array([[1e100, 2e100],
                       [3e100, 4e100]], dtype=np.float64, order='F')
         cfrom, cto = 1e50, 1e150
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -174,7 +174,7 @@ class TestMB01QDOverflow:
         a = np.array([[1e-100, 2e-100],
                       [3e-100, 4e-100]], dtype=np.float64, order='F')
         cfrom, cto = 1e150, 1e50
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -196,7 +196,7 @@ class TestMB01QDEdgeCases:
         m, n = 0, 0
         a = np.array([], dtype=np.float64, order='F').reshape(0, 0)
         cfrom, cto = 1.0, 2.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -214,7 +214,7 @@ class TestMB01QDEdgeCases:
                       [3.0, 4.0]], dtype=np.float64, order='F')
         a_orig = a.copy()
         cfrom, cto = 5.0, 5.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -231,7 +231,7 @@ class TestMB01QDEdgeCases:
         m, n = 1, 1
         a = np.array([[5.0]], dtype=np.float64, order='F')
         cfrom, cto = 2.0, 10.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -249,7 +249,7 @@ class TestMB01QDEdgeCases:
                       [0.0, 5.0, 0.0],
                       [7.0, 0.0, 9.0]], dtype=np.float64, order='F')
         cfrom, cto = 1.0, 2.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
@@ -269,7 +269,7 @@ class TestMB01QDEdgeCases:
         a = np.array([[-1.0, 2.0],
                       [-3.0, -4.0]], dtype=np.float64, order='F')
         cfrom, cto = 1.0, 3.0
-        
+
         nrows = np.array([], dtype=np.int32)
 
         a_out, info_out = mb01qd(
