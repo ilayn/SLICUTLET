@@ -87,6 +87,7 @@ void   SLC_F77_FUNC(dgetrs, DGETRS)(char* trans, int* n, int* nrhs, f64* a, int*
 void   SLC_F77_FUNC(dgecon, DGECON)(char* norm, int* n, f64* a, int* lda, f64* anorm, f64* rcond, f64* work, int* iwork, int* info);
 f64    SLC_F77_FUNC(dlange, DLANGE)(char* norm, int* m, int* n, f64* a, int* lda, f64* work);
 void   SLC_F77_FUNC(dlacpy, DLACPY)(char* uplo, int* m, int* n, f64* a, int* lda, f64* b, int* ldb);
+void   SLC_F77_FUNC(dlaset, DLASET)(char* uplo, int* m, int* n, f64* alpha, f64* beta, f64* a, int* lda);
 void   SLC_F77_FUNC(dlascl, DLASCL)(char* type, int* kl, int* ku, f64* cfrom, f64* cto, int* m, int* n, f64* a, int* lda, int* info);
 void   SLC_F77_FUNC(dlarf, DLARF)(char* side, int* m, int* n, f64* v, int* incv, f64* tau, f64* c, int* ldc, f64* work);
 void   SLC_F77_FUNC(dlarfg, DLARFG)(int* n, f64* alpha, f64* x, int* incx, f64* tau);
@@ -124,6 +125,7 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 #define SLC_DGECON  SLC_F77_FUNC(dgecon, DGECON)
 #define SLC_DLANGE  SLC_F77_FUNC(dlange, DLANGE)
 #define SLC_DLACPY  SLC_F77_FUNC(dlacpy, DLACPY)
+#define SLC_DLASET  SLC_F77_FUNC(dlaset, DLASET)
 #define SLC_DLASCL  SLC_F77_FUNC(dlascl, DLASCL)
 #define SLC_DLARF   SLC_F77_FUNC(dlarf,  DLARF)
 #define SLC_DLARFG  SLC_F77_FUNC(dlarfg, DLARFG)
