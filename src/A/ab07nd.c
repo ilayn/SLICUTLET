@@ -42,11 +42,11 @@ ab07nd(
         *info = -10;
     } else {
         lquery = (ldwork == -1);
-        minwork = 4*m > 1 ? 4*m : 1;
+        minwork = (4*m > 1 ? 4*m : 1);
         // Get workspace size for D inversion
-    SLC_DGETRI(&m, d, &ldd, iwork, dwork, &intm1, &ierr);
+        SLC_DGETRI(&m, d, &ldd, iwork, dwork, &intm1, &ierr);
         maxwork = MAX(MAX(minwork, (i32)dwork[0]), n*m);
-        if (ldwork < maxwork && !lquery) {
+        if ((ldwork < maxwork) && (!lquery)) {
             *info = -14;
         }
     }
@@ -81,7 +81,7 @@ ab07nd(
     }
 
     // Compute D inverse
-    dgetri_(&m, d, &ldd, iwork, dwork, &ldwork, &ierr);
+    SLC_DGETRI(&m, d, &ldd, iwork, dwork, &ldwork, &ierr);
     if (n > 0) {
 
         // Copy b to dwork

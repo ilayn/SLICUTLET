@@ -77,14 +77,17 @@ int    SLC_F77_FUNC(idamax, IDAMAX)(int* n, f64* x, int* incx);
 void   SLC_F77_FUNC(dgemv, DGEMV)(char* trans, int* m, int* n, f64* alpha, f64* a, int* lda, f64* x, int* incx, f64* beta, f64* y, int* incy);
 void   SLC_F77_FUNC(dgemm, DGEMM)(char* transa, char* transb, int* m, int* n, int* k, f64* alpha, f64* a, int* lda, f64* b, int* ldb, f64* beta, f64* c, int* ldc);
 void   SLC_F77_FUNC(zgemm, ZGEMM)(char* transa, char* transb, int* m, int* n, int* k, c128* alpha, c128* a, int* lda, c128* b, int* ldb, c128* beta, c128* c, int* ldc);
+void   SLC_F77_FUNC(dtrsm, DTRSM)(char* side, char* uplo, char* transa, char* diag, int* m, int* n, f64* alpha, f64* a, int* lda, f64* b, int* ldb);
 
 
 // LAPACK routines
 void   SLC_F77_FUNC(dgetrf, DGETRF)(int* m, int* n, f64* a, int* lda, int* ipiv, int* info);
 void   SLC_F77_FUNC(dgetri, DGETRI)(int* n, f64* a, int* lda, int* ipiv, f64* work, int* lwork, int* info);
+void   SLC_F77_FUNC(dgetrs, DGETRS)(char* trans, int* n, int* nrhs, f64* a, int* lda, int* ipiv, f64* b, int* ldb, int* info);
 void   SLC_F77_FUNC(dgecon, DGECON)(char* norm, int* n, f64* a, int* lda, f64* anorm, f64* rcond, f64* work, int* iwork, int* info);
 f64    SLC_F77_FUNC(dlange, DLANGE)(char* norm, int* m, int* n, f64* a, int* lda, f64* work);
 void   SLC_F77_FUNC(dlacpy, DLACPY)(char* uplo, int* m, int* n, f64* a, int* lda, f64* b, int* ldb);
+void   SLC_F77_FUNC(dlascl, DLASCL)(char* type, int* kl, int* ku, f64* cfrom, f64* cto, int* m, int* n, f64* a, int* lda, int* info);
 void   SLC_F77_FUNC(dlarf, DLARF)(char* side, int* m, int* n, f64* v, int* incv, f64* tau, f64* c, int* ldc, f64* work);
 void   SLC_F77_FUNC(dlarfg, DLARFG)(int* n, f64* alpha, f64* x, int* incx, f64* tau);
 void   SLC_F77_FUNC(dlaic1, DLAIC1)(int* job, int* j, f64* x, f64* sest, f64* w, f64* gamma, f64* sestpr, f64* s, f64* c);
@@ -109,6 +112,7 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 #define SLC_DGEMM   SLC_F77_FUNC(dgemm,  DGEMM)
 #define SLC_ZGEMM   SLC_F77_FUNC(zgemm,  ZGEMM)
 #define SLC_DGEMV   SLC_F77_FUNC(dgemv,  DGEMV)
+#define SLC_DTRSM   SLC_F77_FUNC(dtrsm,  DTRSM)
 #define SLC_DSCAL   SLC_F77_FUNC(dscal,  DSCAL)
 #define SLC_DSWAP   SLC_F77_FUNC(dswap,  DSWAP)
 #define SLC_DNRM2   SLC_F77_FUNC(dnrm2,  DNRM2)
@@ -116,9 +120,11 @@ void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack
 
 #define SLC_DGETRF  SLC_F77_FUNC(dgetrf, DGETRF)
 #define SLC_DGETRI  SLC_F77_FUNC(dgetri, DGETRI)
+#define SLC_DGETRS  SLC_F77_FUNC(dgetrs, DGETRS)
 #define SLC_DGECON  SLC_F77_FUNC(dgecon, DGECON)
 #define SLC_DLANGE  SLC_F77_FUNC(dlange, DLANGE)
 #define SLC_DLACPY  SLC_F77_FUNC(dlacpy, DLACPY)
+#define SLC_DLASCL  SLC_F77_FUNC(dlascl, DLASCL)
 #define SLC_DLARF   SLC_F77_FUNC(dlarf,  DLARF)
 #define SLC_DLARFG  SLC_F77_FUNC(dlarfg, DLARFG)
 #define SLC_DLAIC1  SLC_F77_FUNC(dlaic1, DLAIC1)

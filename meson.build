@@ -151,6 +151,7 @@ message('  LAPACK found: ' + lapack_msg)
 
 # Build the core library from the translated C sources
 lib_srcs = files(
+  'src/A/ab04md.c',
   'src/A/ab07nd.c',
   'src/M/mb03oy.c',
   'src/M/mc01td.c',
@@ -203,4 +204,9 @@ test('smoke', test_exe)
 # Python bindings (optional)
 if get_option('python')
   subdir('python')
+  run_target(
+    'pytest-dev',
+    command: [find_program('python3'), meson.current_source_dir() / 'python' / 'tools' / 'run_pytests.py'],
+    depends: slicutlet_lib
+  )
 endif
