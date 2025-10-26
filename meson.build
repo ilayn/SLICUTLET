@@ -151,6 +151,7 @@ message('  LAPACK found: ' + lapack_msg)
 
 # Build the core library from the translated C sources
 lib_srcs = files(
+  'src/A/ab01nd.c',
   'src/A/ab04md.c',
   'src/A/ab05md.c',
   'src/A/ab05nd.c',
@@ -158,7 +159,7 @@ lib_srcs = files(
   'src/M/mb01pd.c',
   'src/M/mb01qd.c',
   'src/M/mb03oy.c',
-  'src/M/mc01td.c',
+  'src/M/mc01td.c'
 )
 
 inc_root = include_directories('.')

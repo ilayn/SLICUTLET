@@ -46,6 +46,48 @@ static PyObject* py_ab04md(PyObject* self, PyObject* args) {
     return Py_BuildValue("OOOOi", A_obj, B_obj, C_obj, D_obj, info);
 }
 
+static PyObject* py_ab01nd(PyObject* self, PyObject* args) {
+    (void)self;
+    int jobz, n, m;
+    double tol;
+    PyArrayObject *A_obj, *B_obj, *Z_obj, *tau_obj, *iwork_obj, *dwork_obj, *nblk_obj;
+
+    if (!PyArg_ParseTuple(args, "iiidO!O!O!O!O!O!O!",
+                          &jobz, &n, &m, &tol,
+                          &PyArray_Type, (PyObject **)&A_obj,
+                          &PyArray_Type, (PyObject **)&B_obj,
+                          &PyArray_Type, (PyObject **)&Z_obj,
+                          &PyArray_Type, (PyObject **)&tau_obj,
+                          &PyArray_Type, (PyObject **)&nblk_obj,
+                          &PyArray_Type, (PyObject **)&iwork_obj,
+                          &PyArray_Type, (PyObject **)&dwork_obj)) {
+        return NULL;
+    }
+
+    f64 *A = (f64*)PyArray_DATA(A_obj);
+    f64 *B = (f64*)PyArray_DATA(B_obj);
+    f64 *Z = (f64*)PyArray_DATA(Z_obj);
+    f64 *tau = (f64*)PyArray_DATA(tau_obj);
+    i32 *nblk = (i32*)PyArray_DATA(nblk_obj);
+    i32 *iwork = (i32*)PyArray_DATA(iwork_obj);
+    f64 *dwork = (f64*)PyArray_DATA(dwork_obj);
+
+    npy_intp *A_dims = PyArray_DIMS(A_obj);
+    npy_intp *B_dims = PyArray_DIMS(B_obj);
+    npy_intp *Z_dims = PyArray_DIMS(Z_obj);
+
+    i32 lda = (i32)(A_dims[0] > 0 ? A_dims[0] : 1);
+    i32 ldb = (i32)(B_dims[0] > 0 ? B_dims[0] : 1);
+    i32 ldz = (i32)(Z_dims[0] > 0 ? Z_dims[0] : 1);
+    i32 ldwork = (i32)PyArray_DIM(dwork_obj, 0);
+
+    i32 ncont, indcon, info;
+    ab01nd(jobz, n, m, A, lda, B, ldb, &ncont, &indcon, nblk, Z, ldz, tau,
+           tol, iwork, dwork, ldwork, &info);
+
+    return Py_BuildValue("OOOOOiii", A_obj, B_obj, Z_obj, tau_obj, nblk_obj, ncont, indcon, info);
+}
+
 static PyObject* py_ab05md(PyObject* self, PyObject* args) {
     (void)self;
     int uplo, over, n1, m1, p1, n2, p2;
@@ -358,6 +400,7 @@ static PyObject* py_mb01qd(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef module_methods[] = {
+    {"py_ab01nd", py_ab01nd, METH_VARARGS, "Wrapper for ab01nd"},
     {"py_ab04md", py_ab04md, METH_VARARGS, "Wrapper for ab04md"},
     {"py_ab05md", py_ab05md, METH_VARARGS, "Wrapper for ab05md"},
     {"py_ab05nd", py_ab05nd, METH_VARARGS, "Wrapper for ab05nd"},

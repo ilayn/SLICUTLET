@@ -82,7 +82,8 @@ mb03oy(
             // Determine ith pivot column and swap if necessary
             i32 nrem = n - i;
             sl_int idx = SLC_IDAMAX(&nrem, &dwork[i], &int1);
-            i32 pvt = i - 1 + (i32)idx;
+            // IDAMAX returns 1-based index relative to the subarray, so actual 0-based index is:
+            i32 pvt = i + (i32)idx - 1;
 
             if (pvt != i)
             {
@@ -186,7 +187,7 @@ mb03oy(
 
     if (*rank < n) {
         if (i < m - 1) {
-            tmp_int = m - i - 1;
+            tmp_int = m - i;
             temp = -a[i + i * lda]*tau[i];
             SLC_DSCAL(&tmp_int, &temp, &a[(i + 1) + i * lda], &int1);
             a[i + i * lda] = aii;
