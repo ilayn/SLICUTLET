@@ -29,7 +29,7 @@ ab01nd(
     f64 dbl1 = 1.0, dblm1 = -1.0, dbl0 = 0.0;
 
     // Local scalars
-    i32 iqr, itau, j, mcrt, nbl, ncrt, ni, nj, rank, wrkopt;
+    i32 iqr, itau, j, mcrt, nbl, ncrt, ni, nj, rank = 0, wrkopt;
     f64 anorm, bnorm, fnrm, toldef;
     f64 sval[3];
 
@@ -138,7 +138,7 @@ ab01nd(
             if ((jobz > 0) && (ncrt > 1)) {
                 i32 ncrtm1 = ncrt - 1;
                 i32 min_rank = MIN(rank, ncrt - 1);
-                SLC_DLACPY("L", &ncrtm1, &min_rank, &b[iqr], &ldb, &z[(ni + 1) + itau*ldz], &ldz);
+                SLC_DLACPY("L", &ncrtm1, &min_rank, &b[iqr+1], &ldb, &z[(ni + 1) + itau*ldz], &ldz);
             }
 
             // Zero the subdiagonal elements of the current matrix
@@ -150,7 +150,7 @@ ab01nd(
             // Backward permutation of the columns of B or A
             if (*indcon == 1) {
                 for (i32 i = 0; i < m; i++) { iwork[i] += 1; }
-                SLC_DLAPMT(&int0, &rank, &m, &b[iqr], &ldb, iwork);
+                SLC_DLAPMT(&int0, &rank, &m, &b[iqr+1], &ldb, iwork);
                 for (i32 i = 0; i < m; i++) { iwork[i] -= 1; }
                 iqr = rank;
                 fnrm = SLC_DLANGE("F", &n, &n, a, &lda, dwork);
@@ -162,12 +162,12 @@ ab01nd(
                 }
             }
 
-            itau = itau + rank;
+            itau += rank;
             if (rank != ncrt) {
                 mcrt = rank;
-                ncrt = ncrt - rank;
-                SLC_DLACPY("G", &ncrt, &mcrt, &a[*ncont + 1 + (ni+1)*lda], &lda, &b[iqr], &ldb);
-                SLC_DLASET("G", &ncrt, &mcrt, &dbl0, &dbl0, &a[*ncont + 1 + (ni+1)*lda], &lda);
+                ncrt -= rank;
+                SLC_DLACPY("G", &ncrt, &mcrt, &a[*ncont + ni*lda], &lda, &b[iqr], &ldb);
+                SLC_DLASET("G", &ncrt, &mcrt, &dbl0, &dbl0, &a[*ncont + ni*lda], &lda);
                 continue;  // GO TO 10
             }
         }

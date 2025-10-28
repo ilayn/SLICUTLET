@@ -1,7 +1,7 @@
 """Tests for ab01nd: Controllability Staircase Form"""
 
 import numpy as np
-from numpy.testing import assert_allclose
+from numpy.testing import assert_allclose, assert_array_equal
 from slicutlet import ab01nd
 
 
@@ -364,6 +364,40 @@ class TestAB01NDTransformationProperties:
 
         assert info == 0
         assert ncont == n  # Should be fully controllable
+
+        # Verify block sizes sum to ncont
+        block_sum = sum(nblk_out[i] for i in range(indcon))
+        assert block_sum == ncont
+
+    def test_block_structure_properties_MIMO(self):
+        """Test that the block structure is correctly formed"""
+        n, m = 4, 2
+        A = np.array([[0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 1.0, 0.0],
+                      [0.0, 0.0, 0.0, 1.0],
+                      [-1.0, -2.0, -3.0, -4.0]], order='F')
+        B = np.array([[0.0, 1.0],
+                      [0.0, 0.0],
+                      [0.0, 0.0],
+                      [1.0, 0.0]], order='F')
+
+        Z = np.zeros((n, n), order='F')
+        tau = np.zeros(n)
+        nblk = np.zeros(n, dtype=np.int32)
+        iwork = np.zeros(m, dtype=np.int32)
+        dwork = np.zeros(max(1, n, 3*m))
+
+        jobz = 2
+        tol = 0.0
+
+        A_out, B_out, Z_out, tau_out, nblk_out, ncont, indcon, info = ab01nd(
+            jobz, n, m, tol, A, B, Z, tau, nblk, iwork, dwork
+        )
+
+        assert info == 0
+        assert ncont == n  # Should be fully controllable
+        assert_array_equal(nblk_out, [2, 1, 1, 0])
+        assert indcon == 3
 
         # Verify block sizes sum to ncont
         block_sum = sum(nblk_out[i] for i in range(indcon))
