@@ -21,7 +21,7 @@ ab07nd(
 )
 {
     // Common integer and double constants for BLAS/LAPACK calls
-    i32 int1 = 1, intm1 = -1, int0 = 0;
+    i32 intm1 = -1;
     f64 dbl0 = 0.0, dbl1 = 1.0, dblm1 = -1.0;
 
     i32 ierr = 0, lquery = 0, maxwork = 0, minwork = 0;

@@ -2,7 +2,6 @@
 #include "../include/types.h"
 #include "../include/slc_blaslapack.h"
 #include <math.h>
-#include <float.h>
 
 void
 mb03oy(
@@ -22,12 +21,11 @@ mb03oy(
 {
 
     // Common integer and f64 constants for BLAS/LAPACK calls
-    i32 int1 = 1, intm1 = -1, int0 = 0;
-    f64 dbl0 = 0.0, dbl1 = 1.0, dblm1 = -1.0;
+    i32 int1 = 1;
 
     i32 imax = 1, imin = 2;
     i32 i, tmp_int, tmp_int2;
-    f64 aii, c1, c2, s1, s2, smax, smaxpr, smin, sminpr, temp, temp2;
+    f64 aii = 0.0, c1, c2, s1, s2, smax, smaxpr, smin, sminpr, temp, temp2;
 
     *info = 0;
     if (m < 0) {
