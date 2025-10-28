@@ -3,7 +3,7 @@ Tests for ab07nd - 2x2 partitioned matrix operations
 """
 
 import numpy as np
-from numpy.testing import assert_allclose, assert_array_almost_equal
+from numpy.testing import assert_allclose
 
 from slicutlet import ab07nd
 
@@ -20,7 +20,7 @@ class TestAB07NDBasic:
         D = np.asfortranarray([[1.0]])  # dummy
 
         iwork = np.zeros(2 * max(2, m, 1), dtype=np.int32)
-        dwork = np.zeros(4 * max(m, 1), dtype=np.float64)
+        dwork = np.zeros(max(4 * max(m, 1), n * max(m, 1), 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
@@ -38,20 +38,28 @@ class TestAB07NDBasic:
                       [1.0, 2.0]])
         D = np.asfortranarray(np.eye(m))
 
+        # Save originals for comparison
+        A_orig = A.copy(order='F')
+        B_orig = B.copy(order='F')
+        C_orig = C.copy(order='F')
+        D_orig = D.copy(order='F')
+
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
+        assert info == 0, f"ab07nd returned info={info}, rcond={rcond}"
+
         # D^{-1} = I
-        assert_array_almost_equal(D_out, np.eye(m))
+        assert_allclose(D_out, np.eye(m), rtol=1e-10, atol=1e-12)
         # B_new = -B * I = -B
-        assert_array_almost_equal(B_out, -B)
+        assert_allclose(B_out, -B_orig, rtol=1e-10, atol=1e-12)
         # C_new = I * C = C
-        assert_array_almost_equal(C_out, C)
+        assert_allclose(C_out, C_orig, rtol=1e-10, atol=1e-12)
         # A_new = A - B*I*C = A - B*C
-        expected_A = A - B @ C
-        assert_array_almost_equal(A_out, expected_A)
+        expected_A = A_orig - B_orig @ C_orig
+        assert_allclose(A_out, expected_A, rtol=1e-10, atol=1e-12)
         assert info == 0
 
     def test_simple_invertible_d(self):
@@ -67,13 +75,13 @@ class TestAB07NDBasic:
                       [0.0, 2.0]])
 
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
         # D^{-1} should be [[0.5, 0], [0, 0.5]]
         expected_Dinv = np.array([[0.5, 0.0], [0.0, 0.5]])
-        assert_array_almost_equal(D_out, expected_Dinv)
+        assert_allclose(D_out, expected_Dinv, rtol=1e-10, atol=1e-12)
         assert info == 0
         assert rcond > 0.4  # well-conditioned
 
@@ -86,7 +94,7 @@ class TestAB07NDBasic:
         D = np.asfortranarray(2.0 * np.eye(m))
 
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
@@ -109,7 +117,7 @@ class TestAB07NDNumerical:
         D = np.asfortranarray(np.diag([2.0, 3.0]))
 
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
@@ -127,7 +135,7 @@ class TestAB07NDNumerical:
                       [1.0, 1.0 + 1e-10]])
 
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
@@ -143,16 +151,21 @@ class TestAB07NDNumerical:
         C = np.asfortranarray(rng.random((m, n)))
         D = np.asfortranarray(np.eye(m) + 0.1 * rng.random((m, m)))  # make sure invertible
 
+        # Save originals for comparison
+        D_orig = D.copy(order='F')
+        B_orig = B.copy(order='F')
+        C_orig = C.copy(order='F')
+
         iwork = np.zeros(2 * max(2, m), dtype=np.int32)
-        dwork = np.zeros(4 * m, dtype=np.float64)
+        dwork = np.zeros(max(4 * m, n * m, 256), dtype=np.float64)
 
         A_out, B_out, C_out, D_out, rcond, info = ab07nd(n, m, A, B, C, D, iwork, dwork)
 
         # D_out should be D^{-1}
-        assert_array_almost_equal(D @ D_out, np.eye(m), decimal=10)
+        assert_allclose(D_orig @ D_out, np.eye(m), rtol=1e-10, atol=1e-12)
 
         # C_out should be D^{-1} * C
-        assert_array_almost_equal(C_out, D_out @ C, decimal=10)
+        assert_allclose(C_out, D_out @ C_orig, rtol=1e-10, atol=1e-12)
 
         # B_out should be -B * D^{-1}
-        assert_array_almost_equal(B_out, -B @ D_out, decimal=10)
+        assert_allclose(B_out, -B_orig @ D_out, rtol=1e-10, atol=1e-12)

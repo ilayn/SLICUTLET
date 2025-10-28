@@ -56,9 +56,9 @@ mb03oy(
         return;
     }
 
-    f64 tolz = sqrt(DBL_EPSILON);
+    f64 tolz = sqrt(DBL_EPSILON*0.5);
     i32 ismin = 0;
-    i32 ismax = ismin + n;
+    i32 ismax = n - 1;
 
     // Initialize partial column norms and pivoting vector. The first n
     // elements of dwork store the exact column norms. The already used
@@ -80,11 +80,9 @@ mb03oy(
             i = *rank;
 
             // Determine ith pivot column and swap if necessary
+            // IDAMAX returns 1-based index hence the extra -1
             i32 nrem = n - i;
-            sl_int idx = SLC_IDAMAX(&nrem, &dwork[i], &int1);
-            // IDAMAX returns 1-based index relative to the subarray, so actual 0-based index is:
-            i32 pvt = i + (i32)idx - 1;
-
+            i32 pvt = i + SLC_IDAMAX(&nrem, &dwork[i], &int1) - 1;
             if (pvt != i)
             {
                 // Swap columns pvt and i
@@ -113,12 +111,13 @@ mb03oy(
                     sval[0] = 0.0;
                     sval[1] = 0.0;
                     sval[2] = 0.0;
+                    // return;
                 }
                 smin = smax;
                 smaxpr = smax;
                 sminpr = smin;
-                c1 = dbl1;
-                c2 = dbl1;
+                c1 = 1.0;
+                c2 = 1.0;
 
             } else {
 
@@ -137,7 +136,7 @@ mb03oy(
 
                             // Apply H(i) to A(i:m, i+1:n) from the left
                             aii = a[i + i * lda];
-                            a[i + i * lda] = dbl1;
+                            a[i + i * lda] = 1.0;
                             tmp_int = m - i;
                             tmp_int2 = n - i - 1;
                             SLC_DLARF("L", &tmp_int, &tmp_int2, &a[i + i * lda], &int1, &tau[i], &a[i + (i + 1) * lda], &lda, &dwork[2*n]);
@@ -146,18 +145,18 @@ mb03oy(
 
                         // Update partial column norms
                         for (i32 j = i + 1; j < n; j++) {
-                            if (dwork[j] != dbl0) {
+                            if (dwork[j] != 0.0) {
                                 temp = fabs(a[i + j * lda]) / dwork[j];
-                                temp = fmax((dbl1 + temp) * (dbl1 - temp), dbl0);
+                                temp = fmax((1.0 + temp) * (1.0 - temp), 0.0);
                                 temp2 = temp * pow(dwork[j] / dwork[n + j], 2);
                                 if (temp2 <= tolz) {
-                                    if (m - i > 1) {
+                                    if (m - i - 1> 0) {
                                         tmp_int = m - i - 1;
                                         dwork[j] = SLC_DNRM2(&tmp_int, &a[(i + 1) + j * lda], &int1);
                                         dwork[n + j] = dwork[j];
                                     } else {
-                                        dwork[j] = dbl0;
-                                        dwork[n + j] = dbl0;
+                                        dwork[j] = 0.0;
+                                        dwork[n + j] = 0.0;
                                     }
                                 } else {
                                     dwork[j] = dwork[j]*sqrt(temp);
@@ -187,7 +186,7 @@ mb03oy(
 
     if (*rank < n) {
         if (i < m - 1) {
-            tmp_int = m - i;
+            tmp_int = m - i - 1;
             temp = -a[i + i * lda]*tau[i];
             SLC_DSCAL(&tmp_int, &temp, &a[(i + 1) + i * lda], &int1);
             a[i + i * lda] = aii;

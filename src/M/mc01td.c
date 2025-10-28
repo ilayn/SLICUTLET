@@ -49,8 +49,10 @@ mc01td(
         SLC_DCOPY(&ncp, p, &int1, dwork, &int1);
         *nz = 0;
         i32 k = *dp;
+
+        // WHILE ( K > 0 and DWORK(K) non-zero) DO
         while (k > 0) {
-            if (dwork[k] == 0.0) {
+            if (dwork[k - 1] == 0.0) {
                 *info = 2;
                 break;
             }
@@ -62,6 +64,7 @@ mc01td(
                 dwork[j] = dwork[j] - alpha * dwork[j - 1];
             }
         }
+        // END WHILE
     } else {
         // Discrete-time case
 
@@ -81,9 +84,10 @@ mc01td(
         f64 signum = 1.0;
         *nz = 0;
         i32 k = 1;
-        i32 info_local = 0;
 
-        while ((k <= *dp) && (info_local == 0)) {
+        // WHILE ( K <= DP and INFO.EQ.0 ) DO
+        while ((k <= *dp) && (*info == 0)) {
+            // Compute the coefficients of T^K P(x)
             // K1 = DP - K + 2; K2 = DP + 2
             i32 k1 = *dp - k + 2;
             i32 k2 = *dp + 2;
@@ -94,36 +98,31 @@ mc01td(
             i32 idx = SLC_IDAMAX(&k1_for, &dwork[k_off], &int1);
             f64 alpha = dwork[k_off + (idx - 1)];
             if (alpha == 0.0) {
-                info_local = 2;
-                break;
-            }
-
-            // DCOPY(K1, DWORK(K), 1, DWORK(K2), 1); DRSCL(K1, ALPHA, DWORK(K2), 1)
-            SLC_DCOPY(&k1_for, &dwork[k_off], &int1, &dwork[k2 - 1], &int1);
-            SLC_DRSCL(&k1_for, &alpha, &dwork[k2 - 1], &int1);
-
-            f64 p1  = dwork[k2 - 1];
-            f64 pk1 = dwork[k2 - 1 + (k1 - 1)];
-
-            // for I = 1..K1-1: DWORK(K+I) = P1*DWORK(DP+1+I) - PK1*DWORK(K2+K1-I)
-            for (i32 i = 1; i <= k1 - 1; ++i) {
-                dwork[k - 1 + i] = p1 * dwork[*dp + i] - pk1 * dwork[(k2 - 1) + (k1 - i)];
-            }
-
-            // Compute the number of unstable zeros
-            k = k + 1;
-            if (dwork[k - 1] == 0.0) {
-                info_local = 2;
-                break;
+                *info = 2;
             } else {
-                signum = copysign(1.0, signum * dwork[k - 1]);
-                if (signum < 0.0) (*nz)++;
+                // DCOPY(K1, DWORK(K), 1, DWORK(K2), 1); DRSCL(K1, ALPHA, DWORK(K2), 1)
+                SLC_DCOPY(&k1_for, &dwork[k_off], &int1, &dwork[k2 - 1], &int1);
+                SLC_DRSCL(&k1_for, &alpha, &dwork[k2 - 1], &int1);
+
+                f64 p1  = dwork[k2 - 1];
+                f64 pk1 = dwork[k2 - 1 + (k1 - 1)];
+
+                // for I = 1..K1-1: DWORK(K+I) = P1*DWORK(DP+1+I) - PK1*DWORK(K2+K1-I)
+                for (i32 i = 1; i <= k1 - 1; ++i) {
+                    dwork[k - 1 + i] = p1 * dwork[*dp + i] - pk1 * dwork[(k2 - 1) + (k1 - i)];
+                }
+
+                // Compute the number of unstable zeros
+                k = k + 1;
+                if (dwork[k - 1] == 0.0) {
+                    *info = 2;
+                } else {
+                    signum = copysign(1.0, signum * dwork[k - 1]);
+                    if (signum < 0.0) (*nz)++;
+                }
             }
         }
-
-        if (info_local != 0) {
-            *info = 2;
-        }
+        // END WHILE
     }
 
     if ((*info == 0) && (*nz == 0)) {
