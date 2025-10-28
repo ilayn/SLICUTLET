@@ -26,7 +26,7 @@ ab01nd(
 {
     // Common integer and double constants for BLAS/LAPACK calls
     i32 int1 = 1, int0 = 0;
-    f64 dbl1 = 1.0, dblm1 = -1.0, dbl0 = 0.0;
+    f64 dbl1 = 1.0, dbl0 = 0.0;
 
     // Local scalars
     i32 iqr, itau, j, mcrt, nbl, ncrt, ni, nj, rank = 0, wrkopt;
