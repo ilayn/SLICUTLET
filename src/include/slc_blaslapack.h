@@ -64,41 +64,41 @@ typedef int32_t lapack_logical;
 
 /**
  *
- * From this point on, until it is undefined again, the i-word must be avoided outside BLAS/LAPACK prototypes.
+ * From this point on, until it is undefined again, the "int" must be avoided outside BLAS/LAPACK prototypes.
  *
  */
 
 // BLAS routines
-void   SLC_F77_FUNC(dcopy, DCOPY)(int* n, f64* dx, int* incx, f64* dy, int* incy);
-void   SLC_F77_FUNC(dscal, DSCAL)(int* n, f64* a, f64* x, int* incx);
-void   SLC_F77_FUNC(dswap, DSWAP)(int* n, f64* x, int* incx, f64* y, int* incy);
-f64    SLC_F77_FUNC(dnrm2, DNRM2)(int* n, f64* x, int* incx);
-int    SLC_F77_FUNC(idamax, IDAMAX)(int* n, f64* x, int* incx);
-void   SLC_F77_FUNC(dgemv, DGEMV)(char* trans, int* m, int* n, f64* alpha, f64* a, int* lda, f64* x, int* incx, f64* beta, f64* y, int* incy);
-void   SLC_F77_FUNC(dgemm, DGEMM)(char* transa, char* transb, int* m, int* n, int* k, f64* alpha, f64* a, int* lda, f64* b, int* ldb, f64* beta, f64* c, int* ldc);
-void   SLC_F77_FUNC(zgemm, ZGEMM)(char* transa, char* transb, int* m, int* n, int* k, c128* alpha, c128* a, int* lda, c128* b, int* ldb, c128* beta, c128* c, int* ldc);
-void   SLC_F77_FUNC(dtrsm, DTRSM)(char* side, char* uplo, char* transa, char* diag, int* m, int* n, f64* alpha, f64* a, int* lda, f64* b, int* ldb);
+void   SLC_F77_FUNC(dcopy, DCOPY)(const int* n, const f64* dx, const int* incx, f64* dy, const int* incy);
+void   SLC_F77_FUNC(dscal, DSCAL)(const int* n, const f64* a, f64* x, const int* incx);
+void   SLC_F77_FUNC(dswap, DSWAP)(const int* n, f64* x, const int* incx, f64* y, const int* incy);
+f64    SLC_F77_FUNC(dnrm2, DNRM2)(const int* n, const f64* x, const int* incx);
+int    SLC_F77_FUNC(idamax, IDAMAX)(const int* n, const f64* x, const int* incx);
+void   SLC_F77_FUNC(dgemv, DGEMV)(const char* trans, const int* m, const int* n, const f64* alpha, const f64* a, const int* lda, const f64* x, const int* incx, const f64* beta, f64* y, const int* incy);
+void   SLC_F77_FUNC(dgemm, DGEMM)(const char* transa, const char* transb, const int* m, const int* n, const int* k, const f64* alpha, const f64* a, const int* lda, const f64* b, const int* ldb, const f64* beta, f64* c, const int* ldc);
+void   SLC_F77_FUNC(zgemm, ZGEMM)(const char* transa, const char* transb, const int* m, const int* n, const int* k, const c128* alpha, const c128* a, const int* lda, const c128* b, const int* ldb, const c128* beta, c128* c, const int* ldc);
+void   SLC_F77_FUNC(dtrsm, DTRSM)(const char* side, const char* uplo, const char* transa, const char* diag, const int* m, const int* n, const f64* alpha, const f64* a, const int* lda, f64* b, const int* ldb);
 
 
 // LAPACK routines
-void   SLC_F77_FUNC(dgetrf, DGETRF)(int* m, int* n, f64* a, int* lda, int* ipiv, int* info);
-void   SLC_F77_FUNC(dgetri, DGETRI)(int* n, f64* a, int* lda, int* ipiv, f64* work, int* lwork, int* info);
-void   SLC_F77_FUNC(dgetrs, DGETRS)(char* trans, int* n, int* nrhs, f64* a, int* lda, int* ipiv, f64* b, int* ldb, int* info);
-void   SLC_F77_FUNC(dgecon, DGECON)(char* norm, int* n, f64* a, int* lda, f64* anorm, f64* rcond, f64* work, int* iwork, int* info);
-f64    SLC_F77_FUNC(dlange, DLANGE)(char* norm, int* m, int* n, f64* a, int* lda, f64* work);
-void   SLC_F77_FUNC(dlacpy, DLACPY)(char* uplo, int* m, int* n, f64* a, int* lda, f64* b, int* ldb);
-void   SLC_F77_FUNC(dlaset, DLASET)(char* uplo, int* m, int* n, f64* alpha, f64* beta, f64* a, int* lda);
-void   SLC_F77_FUNC(dlascl, DLASCL)(char* type, int* kl, int* ku, f64* cfrom, f64* cto, int* m, int* n, f64* a, int* lda, int* info);
-void   SLC_F77_FUNC(dlarf, DLARF)(char* side, int* m, int* n, f64* v, int* incv, f64* tau, f64* c, int* ldc, f64* work);
-void   SLC_F77_FUNC(dlarfg, DLARFG)(int* n, f64* alpha, f64* x, int* incx, f64* tau);
-void   SLC_F77_FUNC(dlaic1, DLAIC1)(int* job, int* j, f64* x, f64* sest, f64* w, f64* gamma, f64* sestpr, f64* s, f64* c);
-void   SLC_F77_FUNC(drscl, DRSCL)(int* n, f64* sa, f64* sx, int* incx);
-void   SLC_F77_FUNC(dgges, DGGES)(char* jobvsl, char* jobvsr, char* sort, lapack_logical (*selctg)(f64*, f64*, f64*), int* n, f64* a, int* lda, f64* b, int* ldb, int* sdim, f64* alphar, f64* alphai, f64* beta, f64* vsl, int* ldvsl, f64* vsr, int* ldvsr, f64* work, int* lwork, lapack_logical* bwork, int* info);
-f64    SLC_F77_FUNC(dlamch, DLAMCH)(char* cmach);
+void   SLC_F77_FUNC(dgetrf, DGETRF)(const int* m, const int* n, f64* a, const int* lda, int* ipiv, int* info);
+void   SLC_F77_FUNC(dgetri, DGETRI)(const int* n, f64* a, const int* lda, const int* ipiv, f64* work, const int* lwork, int* info);
+void   SLC_F77_FUNC(dgetrs, DGETRS)(const char* trans, const int* n, const int* nrhs, const f64* a, const int* lda, const int* ipiv, f64* b, const int* ldb, int* info);
+void   SLC_F77_FUNC(dgecon, DGECON)(const char* norm, const int* n, const f64* a, const int* lda, const f64* anorm, f64* rcond, f64* work, int* iwork, int* info);
+f64    SLC_F77_FUNC(dlange, DLANGE)(const char* norm, const int* m, const int* n, const f64* a, const int* lda, f64* work);
+void   SLC_F77_FUNC(dlacpy, DLACPY)(const char* uplo, const int* m, const int* n, const f64* a, const int* lda, f64* b, const int* ldb);
+void   SLC_F77_FUNC(dlaset, DLASET)(const char* uplo, const int* m, const int* n, const f64* alpha, const f64* beta, f64* a, const int* lda);
+void   SLC_F77_FUNC(dlascl, DLASCL)(const char* type, const int* kl, const int* ku, const f64* cfrom, const f64* cto, const int* m, const int* n, f64* a, const int* lda, int* info);
+void   SLC_F77_FUNC(dlarf, DLARF)(const char* side, const int* m, const int* n, const f64* v, const int* incv, const f64* tau, f64* c, const int* ldc, f64* work);
+void   SLC_F77_FUNC(dlarfg, DLARFG)(const int* n, f64* alpha, f64* x, const int* incx, f64* tau);
+void   SLC_F77_FUNC(dlaic1, DLAIC1)(const int* job, const int* j, const f64* x, const f64* sest, const f64* w, const f64* gamma, f64* sestpr, f64* s, f64* c);
+void   SLC_F77_FUNC(drscl, DRSCL)(const int* n, const f64* sa, f64* sx, const int* incx);
+void   SLC_F77_FUNC(dgges, DGGES)(const char* jobvsl, const char* jobvsr, const char* sort, lapack_logical (*selctg)(const f64*, const f64*, const f64*), const int* n, f64* a, const int* lda, f64* b, const int* ldb, int* sdim, f64* alphar, f64* alphai, f64* beta, f64* vsl, const int* ldvsl, f64* vsr, const int* ldvsr, f64* work, const int* lwork, lapack_logical* bwork, int* info);
+f64    SLC_F77_FUNC(dlamch, DLAMCH)(const char* cmach);
 void   SLC_F77_FUNC(dlabad, DLABAD)(f64* small, f64* large);
-void   SLC_F77_FUNC(dlapmt, DLAPMT)(int* forwrd, int* m, int* n, f64* x, int* ldx, int* k);
-void   SLC_F77_FUNC(dormqr, DORMQR)(char* side, char* trans, int* m, int* n, int* k, f64* a, int* lda, f64* tau, f64* c, int* ldc, f64* work, int* lwork, int* info);
-void   SLC_F77_FUNC(dorgqr, DORGQR)(int* m, int* n, int* k, f64* a, int* lda, f64* tau, f64* work, int* lwork, int* info);
+void   SLC_F77_FUNC(dlapmt, DLAPMT)(const int* forwrd, const int* m, const int* n, f64* x, const int* ldx, const int* k);
+void   SLC_F77_FUNC(dormqr, DORMQR)(const char* side, const char* trans, const int* m, const int* n, const int* k, const f64* a, const int* lda, const f64* tau, f64* c, const int* ldc, f64* work, const int* lwork, int* info);
+void   SLC_F77_FUNC(dorgqr, DORGQR)(const int* m, const int* n, const int* k, f64* a, const int* lda, const f64* tau, f64* work, const int* lwork, int* info);
 
 /**
  * End of evil hack.
