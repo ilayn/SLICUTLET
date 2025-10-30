@@ -17,7 +17,7 @@ ma02es(
         // Construct the upper triangle of A.
         for (i32 i = 1; i <= n; i++) {
             a[(i-1) + (i-1)*lda] = 0.0;
-            for (i32 j = 2; j <= n; j++) {
+            for (i32 j = i+1; j <= n; j++) {
                 a[(i-1) + (j-1)*lda] = -a[(j-1) + (i-1)*lda];
             }
         }
@@ -27,7 +27,7 @@ ma02es(
         // Construct the lower triangle of A.
         for (i32 i = 1; i <= n; i++) {
             a[(i-1) + (i-1)*lda] = 0.0;
-            for (i32 j = 2; j <= n; j++) {
+            for (i32 j = i+1; j <= n; j++) {
                 a[(j-1) + (i-1)*lda] = -a[(i-1) + (j-1)*lda];
             }
         }

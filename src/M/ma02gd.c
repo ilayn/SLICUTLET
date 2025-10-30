@@ -35,7 +35,7 @@ ma02gd(
         }
     } else if (incx > 1) {
         for (i32 j = k1; j <= k2; j++) {
-            jp = ipiv[jx];
+            jp = ipiv[jx - 1];
             if (jp != j) {
                 SLC_DSWAP(&n, &a[(j - 1)*lda], &int1, &a[(jp - 1)*lda], &int1);
             }
@@ -43,7 +43,7 @@ ma02gd(
         }
     } else if (incx < 0) {
         for (i32 j = k2; j >= k1; j--) {
-            jp = ipiv[jx];
+            jp = ipiv[jx - 1];
             if (jp != j) {
                 SLC_DSWAP(&n, &a[(j - 1)*lda], &int1, &a[(jp - 1)*lda], &int1);
             }

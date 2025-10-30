@@ -15,7 +15,7 @@ ma02ad(
 {
     if (job == 0) {
         for (i32 j = 0; j < n; j++) {
-            for (i32 i = 0; i < MIN(j, m); i++) {
+            for (i32 i = 0; i < MIN(j + 1, m); i++) {
                 b[j + i*ldb] = a[i + j*lda];
             }
         }

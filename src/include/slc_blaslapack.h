@@ -96,12 +96,12 @@ void   SLC_F77_FUNC(dlarf , DLARF )(const char* side, const int* m, const int* n
 void   SLC_F77_FUNC(dlarfg, DLARFG)(const int* n, f64* alpha, f64* x, const int* incx, f64* tau);
 void   SLC_F77_FUNC(dlaset, DLASET)(const char* uplo, const int* m, const int* n, const f64* alpha, const f64* beta, f64* a, const int* lda);
 void   SLC_F77_FUNC(dlascl, DLASCL)(const char* type, const int* kl, const int* ku, const f64* cfrom, const f64* cto, const int* m, const int* n, f64* a, const int* lda, int* info);
-void   SLC_F77_FUNC(dlassq, DLASSQ)(const int n, const f64* x, const int incx, f64* scale, f64* sumsq);
+void   SLC_F77_FUNC(dlassq, DLASSQ)(const int* n, const f64* x, const int* incx, f64* scale, f64* sumsq);
 void   SLC_F77_FUNC(dormqr, DORMQR)(const char* side, const char* trans, const int* m, const int* n, const int* k, const f64* a, const int* lda, const f64* tau, f64* c, const int* ldc, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(dorgqr, DORGQR)(const int* m, const int* n, const int* k, f64* a, const int* lda, const f64* tau, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(drscl , DRSCL )(const int* n, const f64* sa, f64* sx, const int* incx);
 f64    SLC_F77_FUNC(zlange, ZLANGE)(const char* norm, const int* m, const int* n, const c128* a, const int* lda, f64* work);
-void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int n, const c128* x, const int incx, f64* scale, f64* sumsq);
+void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int* n, const c128* x, const int* incx, f64* scale, f64* sumsq);
 
 /**
  * End of evil hack.
@@ -147,6 +147,8 @@ void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int n, const c128* x, const int incx, 
 #define SLC_DORMQR  SLC_F77_FUNC(dormqr, DORMQR)
 #define SLC_DORGQR  SLC_F77_FUNC(dorgqr, DORGQR)
 #define SLC_DRSCL   SLC_F77_FUNC(drscl,  DRSCL)
+#define SLC_ZLANGE  SLC_F77_FUNC(zlange, ZLANGE)
+#define SLC_ZLASSQ  SLC_F77_FUNC(zlassq, ZLASSQ)
 
 #ifdef __cplusplus
 } /* extern "C" */

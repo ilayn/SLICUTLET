@@ -20,7 +20,7 @@ ma02cd(
     for (i32 i = 1; i <= MIN(kl, n - 2); i++) {
         i32 i1 = (n - i) / 2;
         if (i1 > 0) {
-            SLC_DSWAP(&i1, &a[i*lda], &lda1, &a[(n - i1) + (n - i1 - i)*lda], &ldam1);
+            SLC_DSWAP(&i1, &a[i], &lda1, &a[(n - i1) + (n - i1 - i)*lda], &ldam1);
         }
     }
 
@@ -28,7 +28,7 @@ ma02cd(
     for (i32 i = 1; i <= MIN(ku, n - 2); i++) {
         i32 i1 = (n - i) / 2;
         if (i1 > 0) {
-            SLC_DSWAP(&i1, &a[i], &lda, &a[(n - i1 - i)*lda + (n - i1)], &ldam1);
+            SLC_DSWAP(&i1, &a[i*lda], &lda1, &a[(n - i1 - i) + (n - i1)*lda], &ldam1);
         }
     }
 

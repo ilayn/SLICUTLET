@@ -14,6 +14,7 @@ ma02id(
     f64* dwork
 )
 {
+    i32 int1 = 1;
     f64 value = 0.0, sum = 0.0, temp = 0.0;
     const f64 sq2 = sqrt(2.0);
 
@@ -134,40 +135,40 @@ ma02id(
         f64 scale = 0.0;
         sum = 1.0;
         for (i32 j = 0; j < n; j++) {
-            SLC_DLASSQ(&n, &a[j*lda], &(i32){1}, &scale, &sum);
+            SLC_DLASSQ(&n, &a[j*lda], &int1, &scale, &sum);
         }
 
         // Add normF(G) and normF(Q).
-        SLC_DLASSQ(&(i32){n - 1}, &qg[1], &(i32){1}, &scale, &sum);
-        SLC_DLASSQ(&(i32){n - 2}, &qg[2 + ldqg], &(i32){1}, &scale, &sum);
+        SLC_DLASSQ(&(i32){n - 1}, &qg[1], &int1, &scale, &sum);
+        SLC_DLASSQ(&(i32){n - 2}, &qg[2 + ldqg], &int1, &scale, &sum);
         for (i32 j = 2; j <= n - 2; j++) {
-            SLC_DLASSQ(&(i32){j - 2}, &qg[j*ldqg], &(i32){1}, &scale, &sum);
-            SLC_DLASSQ(&(i32){n - j - 1}, &qg[(j+1) + j*ldqg], &(i32){1}, &scale, &sum);
+            SLC_DLASSQ(&(i32){j - 2}, &qg[j*ldqg], &int1, &scale, &sum);
+            SLC_DLASSQ(&(i32){n - j - 1}, &qg[(j+1) + j*ldqg], &int1, &scale, &sum);
         }
-        SLC_DLASSQ(&(i32){n - 2}, &qg[(n-1)*ldqg], &(i32){1}, &scale, &sum);
-        SLC_DLASSQ(&(i32){n - 1}, &qg[n*ldqg], &(i32){1}, &scale, &sum);
+        SLC_DLASSQ(&(i32){n - 2}, &qg[(n-1)*ldqg], &int1, &scale, &sum);
+        SLC_DLASSQ(&(i32){n - 1}, &qg[n*ldqg], &int1, &scale, &sum);
         value = sq2 * scale * sqrt(sum);
 
     } else if (norm == 1) {
         f64 scale = 0.0;
         sum = 1.0;
         for (i32 j = 0; j < n; j++) {
-            SLC_DLASSQ(&n, &a[j*lda], &(i32){1}, &scale, &sum);
+            SLC_DLASSQ(&n, &a[j*lda], &int1, &scale, &sum);
         }
 
         f64 dscl = 0.0;
         f64 dsum = 1.0;
-        SLC_DLASSQ(&(i32){1}, &qg[0], &(i32){1}, &dscl, &dsum);
+        SLC_DLASSQ(&int1, &qg[0], &int1, &dscl, &dsum);
         if (n > 1) {
-            SLC_DLASSQ(&(i32){n - 1}, &qg[1], &(i32){1}, &scale, &sum);
+            SLC_DLASSQ(&(i32){n - 1}, &qg[1], &int1, &scale, &sum);
         }
         for (i32 j = 1; j < n; j++) {
-            SLC_DLASSQ(&(i32){j - 1}, &qg[j*ldqg], &(i32){1}, &scale, &sum);
-            SLC_DLASSQ(&(i32){2}, &qg[(j-1) + j*ldqg], &(i32){1}, &dscl, &dsum);
-            SLC_DLASSQ(&(i32){n - j - 1}, &qg[(j+1) + j*ldqg], &(i32){1}, &scale, &sum);
+            SLC_DLASSQ(&(i32){j - 1}, &qg[j*ldqg], &int1, &scale, &sum);
+            SLC_DLASSQ(&(i32){2}, &qg[(j-1) + j*ldqg], &int1, &dscl, &dsum);
+            SLC_DLASSQ(&(i32){n - j - 1}, &qg[(j+1) + j*ldqg], &int1, &scale, &sum);
         }
-        SLC_DLASSQ(&(i32){n - 1}, &qg[n*ldqg], &(i32){1}, &scale, &sum);
-        SLC_DLASSQ(&(i32){1}, &qg[(n-1) + n*ldqg], &(i32){1}, &dscl, &dsum);
+        SLC_DLASSQ(&(i32){n - 1}, &qg[n*ldqg], &int1, &scale, &sum);
+        SLC_DLASSQ(&int1, &qg[(n-1) + n*ldqg], &int1, &dscl, &dsum);
         value = hypot(sq2 * scale * sqrt(sum), dscl * sqrt(dsum));
     }
 

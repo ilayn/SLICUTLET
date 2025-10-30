@@ -17,8 +17,10 @@ ma02az(
 {
     if (trans) {
         if (job == 0) {
+            // Upper triangle: Fortran DO I = 1, MIN( J, M )
+            // In C 0-based: i < MIN(j+1, m)
             for (i32 j = 0; j < n; j++) {
-                for (i32 i = 0; i < MIN(j, m); i++) {
+                for (i32 i = 0; i < MIN(j + 1, m); i++) {
                     b[j + i*ldb] = a[i + j*lda];
                 }
             }
@@ -36,9 +38,10 @@ ma02az(
             }
         }
     } else {
+        // Conjugate transpose
         if (job == 0) {
             for (i32 j = 0; j < n; j++) {
-                for (i32 i = 0; i < MIN(j, m); i++) {
+                for (i32 i = 0; i < MIN(j + 1, m); i++) {
                     b[j + i*ldb] = conj(a[i + j*lda]);
                 }
             }

@@ -12,7 +12,7 @@ ma02jz(
     const i32 ldq1,
     const c128* q2,
     const i32 ldq2,
-    f64* res,
+    c128* res,
     const i32 ldres
 )
 {

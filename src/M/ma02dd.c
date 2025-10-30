@@ -30,7 +30,7 @@ ma02dd(
             // Pack the upper triangle of A.
 
             for (i32 j = 1; j<= n; j++) {
-                SLC_DCOPY(&j, &a[(j - 1)*lda], &int1, &ap[ij], &int1);
+                SLC_DCOPY(&j, &a[(j - 1)*lda], &int1, &ap[ij - 1], &int1);
                 ij += j;
             }
 
@@ -51,7 +51,7 @@ ma02dd(
             // Unpack the upper triangle of A.
 
             for (i32 j = 1; j<= n; j++) {
-                SLC_DCOPY(&j, &ap[ij], &int1, &a[(j - 1)*lda], &int1);
+                SLC_DCOPY(&j, &ap[ij - 1], &int1, &a[(j - 1)*lda], &int1);
                 ij += j;
             }
         }
