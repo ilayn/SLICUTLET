@@ -1,0 +1,68 @@
+name: Test Matrix (Multi-platform)
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+        exclude:
+          # Optionally exclude some combinations if needed
+          - os: windows-latest
+            python-version: '3.11'  # Example: skip older Python on Windows
+
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }} - Python ${{ matrix.python-version }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        channels: conda-forge
+        channel-priority: strict
+
+    - name: Install dependencies (Linux/macOS)
+      if: runner.os != 'Windows'
+      shell: bash -l {0}
+      run: |
+        conda install -y meson ninja numpy pytest openblas
+
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
+      shell: bash -l {0}
+      run: |
+        conda install -y meson ninja numpy pytest openblas clang clangxx compiler-rt
+
+    - name: Build SLICUTLET (Linux/macOS)
+      if: runner.os != 'Windows'
+      shell: bash -l {0}
+      run: |
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+
+    - name: Build SLICUTLET (Windows with clang)
+      if: runner.os == 'Windows'
+      shell: bash -l {0}
+      run: |
+        export CC=clang
+        export CXX=clang++
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+      env:
+        CC: clang
+        CXX: clang++
+
+    - name: Run tests
+      shell: bash -l {0}
+      run: |
+        PYTHON_VERSION="${{ matrix.python-version }}"
+        PYTHON_VERSION_COMPACT="${PYTHON_VERSION//./}"  # Remove dots: 3.13 -> 313
+        export PYTHONPATH="${PWD}/build-install/usr/local/lib/python${PYTHON_VERSION}/site-packages"
+        pytest python/tests/ -v

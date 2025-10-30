@@ -1,0 +1,58 @@
+name: Publish to PyPI (Trusted Publisher)
+
+# RECOMMENDED: Uses OpenID Connect (OIDC) - No API tokens needed!
+# Setup: https://docs.pypi.org/trusted-publishers/adding-a-publisher/
+#
+# Steps to enable:
+# 1. Go to https://pypi.org/manage/account/publishing/
+# 2. Add GitHub as a trusted publisher
+# 3. Fill in: ilayn/SLICUTLET, workflow: publish-pypi.yml, environment: pypi
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      run_id:
+        description: 'Build Wheels workflow run ID (from Actions tab)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write  # REQUIRED for trusted publishing
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/slicutlet/
+
+    steps:
+    - name: Download artifacts from build workflow
+      uses: actions/download-artifact@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ inputs.run_id }}
+        pattern: wheels-*
+        merge-multiple: true
+        path: dist
+
+    - name: List downloaded wheels
+      run: ls -lah dist/
+
+    - name: Verify wheel contents
+      run: |
+        pip install wheel
+        for wheel in dist/*.whl; do
+          echo "=== Checking $wheel ==="
+          python -m wheel unpack "$wheel" -d temp_check
+          ls -R temp_check/
+          rm -rf temp_check
+        done
+
+    - name: Publish to PyPI (Trusted Publisher)
+      uses: pypa/gh-action-pypi-publish@release/v1
+      # No password/token needed with trusted publishing!
+      with:
+        print-hash: true
+        verbose: true

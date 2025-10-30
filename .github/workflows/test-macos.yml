@@ -1,0 +1,40 @@
+name: Test macOS (Accelerate)
+
+on:
+  pull_request:
+
+jobs:
+  test-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install build dependencies
+      run: |
+        brew install ninja meson
+
+    - name: Install Python dependencies
+      run: |
+        pip install numpy pytest
+
+    - name: Build SLICUTLET (using Accelerate)
+      run: |
+        # Accelerate is built-in on macOS, Meson should find it automatically
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+
+    - name: Run tests
+      run: |
+        export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
+        pytest python/tests/ -v
+
+    - name: Verify Accelerate linkage
+      run: |
+        # Check that the library links to Accelerate framework
+        otool -L build/libslicutlet.*.dylib | grep Accelerate || echo "Warning: Not linked to Accelerate"
