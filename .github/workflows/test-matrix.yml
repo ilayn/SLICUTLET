@@ -5,6 +5,8 @@ on:
 
 jobs:
   test:
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     strategy:
       fail-fast: false
       matrix:
@@ -14,6 +16,10 @@ jobs:
           # Optionally exclude some combinations if needed
           - os: windows-latest
             python-version: '3.11'  # Example: skip older Python on Windows
+          # Skip platforms based on commit message
+          - os: ${{ contains(github.event.head_commit.message, '[skip linux]') && 'ubuntu-latest' || '' }}
+          - os: ${{ contains(github.event.head_commit.message, '[skip macos]') && 'macos-latest' || '' }}
+          - os: ${{ contains(github.event.head_commit.message, '[skip windows]') && 'windows-latest' || '' }}
 
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }} - Python ${{ matrix.python-version }}
@@ -62,7 +68,8 @@ jobs:
         meson install -C build --destdir="${PWD}/build-install"
 
     - name: Debug - Check install directory (Windows only)
-      if: runner.os == 'Windows'
+      # Only run if commit message contains [show debug]
+      if: runner.os == 'Windows' && contains(github.event.head_commit.message, '[show debug]')
       shell: bash -l {0}
       run: |
         echo "=== Checking build-install structure ==="
