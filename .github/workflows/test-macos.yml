@@ -15,22 +15,16 @@ jobs:
       with:
         python-version: '3.13'
 
-    - name: Install build dependencies
-      run: |
-        brew install ninja meson
-
-    - name: Install Python dependencies
+    - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install numpy pytest
+        python3 -m pip install meson ninja numpy pytest
 
     - name: Build SLICUTLET (using Accelerate)
       run: |
-        # Accelerate is built-in on macOS, Meson should find it automatically
-        # Ensure meson uses the correct Python from setup-python
-        python3 -m pip install meson
-        python3 -m mesonbuild setup build -Dpython=true
-        python3 -m mesonbuild install -C build --destdir="${PWD}/build-install"
+        # Accelerate is built-in on macOS
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
 
     - name: Run tests
       run: |
