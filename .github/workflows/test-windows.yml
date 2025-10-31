@@ -42,6 +42,16 @@ jobs:
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
 
+    - name: Debug - Check install directory structure
+      shell: bash -l {0}
+      run: |
+        echo "=== Checking build-install structure ==="
+        find build-install -type d -name "*site-packages*" || echo "No site-packages found"
+        echo "=== Listing usr/local contents ==="
+        ls -la build-install/usr/local/ || echo "No usr/local"
+        echo "=== Searching for slicutlet module ==="
+        find build-install -name "*.pyd" -o -name "pyslicutlet*" || echo "No .pyd files found"
+
     - name: Run tests
       shell: bash -l {0}
       run: |
