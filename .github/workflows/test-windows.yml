@@ -79,8 +79,13 @@ jobs:
         which libslicutlet-0.dll 2>/dev/null || echo "libslicutlet-0.dll not in PATH"
         echo "=== Testing Python import directly ==="
         export PYTHONPATH="${PWD}/build-install/lib/site-packages"
-        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:${PATH}"
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:$CONDA_PREFIX/Library/mingw-w64/bin:${PATH}"
+        echo "PATH after export:"
+        echo "$PATH" | tr ':' '\n' | head -15
         python -c "import sys; print('Python executable:', sys.executable); print('Python version:', sys.version)" || echo "Python check failed"
+        echo "=== Trying to load DLL with Python ctypes ==="
+        python -c "import ctypes; ctypes.CDLL('${PWD}/build-install/bin/libslicutlet-0.dll'); print('SUCCESS: Direct DLL load worked')" 2>&1 || echo "FAILED: Direct DLL load failed"
+        echo "=== Now trying slicutlet import ==="
         python -c "import slicutlet; print('SUCCESS: slicutlet imported')" 2>&1 || echo "FAILED: Could not import slicutlet"
 
     - name: Run tests
@@ -89,8 +94,8 @@ jobs:
         # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
         export PYTHONPATH="${PWD}/build-install/lib/site-packages"
         # Add library directories to PATH so DLLs can be found
-        # Need both our DLLs and conda's DLLs (OpenBLAS, etc.)
-        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:${PATH}"
+        # Need: our DLLs, conda's DLLs (OpenBLAS), and MinGW runtime DLLs
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:$CONDA_PREFIX/Library/mingw-w64/bin:${PATH}"
         pytest python/tests/
 
     - name: Check compiler used
