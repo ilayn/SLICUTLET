@@ -65,4 +65,11 @@ jobs:
         PYTHON_VERSION="${{ matrix.python-version }}"
         PYTHON_VERSION_COMPACT="${PYTHON_VERSION//./}"  # Remove dots: 3.13 -> 313
         export PYTHONPATH="${PWD}/build-install/usr/local/lib/python${PYTHON_VERSION}/site-packages"
+        if [[ "$RUNNER_OS" == "Linux" ]]; then
+          export LD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+        elif [[ "$RUNNER_OS" == "macOS" ]]; then
+          export DYLD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib:${DYLD_LIBRARY_PATH}"
+        elif [[ "$RUNNER_OS" == "Windows" ]]; then
+          export PATH="${PWD}/build-install/usr/local/bin:${PATH}"
+        fi
         pytest python/tests/ -v
