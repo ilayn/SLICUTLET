@@ -114,9 +114,11 @@ jobs:
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
           export PYTHONPATH="${PWD}/build-install/lib/site-packages"
-          # Add library directories to PATH so DLLs can be found
-          # Need: our DLLs, conda's DLLs (OpenBLAS), and MinGW runtime DLLs
-          export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:$CONDA_PREFIX/Library/mingw-w64/bin:${PATH}"
+          # On Windows, Python 3.8+ requires os.add_dll_directory() or DLLs in same dir as .pyd
+          # Copy DLLs to the pyslicutlet directory
+          cp build-install/bin/*.dll build-install/lib/site-packages/slicutlet/ || echo "DLL copy failed"
+          cp "$CONDA_PREFIX/Library/bin/openblas.dll" build-install/lib/site-packages/slicutlet/ || echo "OpenBLAS copy failed"
+          cp "$CONDA_PREFIX/Library/mingw-w64/bin/libgcc_s_seh-1.dll" build-install/lib/site-packages/slicutlet/ || echo "libgcc copy failed"
         else
           export PYTHONPATH="${PWD}/build-install/usr/local/lib/python${PYTHON_VERSION}/site-packages"
           if [[ "$RUNNER_OS" == "Linux" ]]; then
