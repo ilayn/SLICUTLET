@@ -55,9 +55,9 @@ jobs:
     - name: Run tests
       shell: bash -l {0}
       run: |
-        # Windows uses Lib instead of lib/python3.13
-        export PYTHONPATH="${PWD}/build-install/usr/local/Lib/site-packages"
-        export PATH="${PWD}/build-install/usr/local/bin:${PATH}"
+        # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
+        export PYTHONPATH="${PWD}/build-install/lib/site-packages"
+        export PATH="${PWD}/build-install/bin:${PATH}"
         pytest python/tests/
 
     - name: Check compiler used

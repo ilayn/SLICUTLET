@@ -80,8 +80,9 @@ jobs:
         
         # Windows uses different install paths than Linux/macOS
         if [[ "$RUNNER_OS" == "Windows" ]]; then
-          export PYTHONPATH="${PWD}/build-install/usr/local/Lib/site-packages"
-          export PATH="${PWD}/build-install/usr/local/bin:${PATH}"
+          # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
+          export PYTHONPATH="${PWD}/build-install/lib/site-packages"
+          export PATH="${PWD}/build-install/bin:${PATH}"
         else
           export PYTHONPATH="${PWD}/build-install/usr/local/lib/python${PYTHON_VERSION}/site-packages"
           if [[ "$RUNNER_OS" == "Linux" ]]; then
