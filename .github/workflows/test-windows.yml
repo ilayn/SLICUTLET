@@ -53,6 +53,12 @@ jobs:
         find build-install -name "*.pyd" -o -name "pyslicutlet*" || echo "No .pyd files found"
         echo "=== Searching for DLL files ==="
         find build-install -name "*.dll" -o -name "libslicutlet*" || echo "No DLL files found"
+        echo "=== Conda prefix ==="
+        echo "CONDA_PREFIX=$CONDA_PREFIX"
+        echo "=== Conda Library structure ==="
+        ls -la "$CONDA_PREFIX/Library/" || echo "No Library directory"
+        echo "=== Conda Library/bin DLLs (first 20) ==="
+        ls "$CONDA_PREFIX/Library/bin/"*.dll 2>/dev/null | head -20 || echo "No DLLs in Library/bin"
 
     - name: Run tests
       shell: bash -l {0}
