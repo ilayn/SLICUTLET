@@ -59,6 +59,10 @@ jobs:
         ls -la "$CONDA_PREFIX/Library/" || echo "No Library directory"
         echo "=== Conda Library/bin DLLs (first 20) ==="
         ls "$CONDA_PREFIX/Library/bin/"*.dll 2>/dev/null | head -20 || echo "No DLLs in Library/bin"
+        echo "=== Looking for OpenBLAS DLLs ==="
+        ls "$CONDA_PREFIX/Library/bin/"*openblas*.dll 2>/dev/null || echo "No OpenBLAS DLLs found"
+        echo "=== Looking for libgfortran/mingw DLLs ==="
+        ls "$CONDA_PREFIX/Library/bin/"*gfortran*.dll "$CONDA_PREFIX/Library/bin/"*gcc*.dll "$CONDA_PREFIX/Library/bin/"*mingw*.dll 2>/dev/null || echo "No gfortran/gcc/mingw DLLs found"
 
     - name: Run tests
       shell: bash -l {0}
