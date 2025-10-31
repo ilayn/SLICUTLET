@@ -30,7 +30,7 @@ jobs:
       run: |
         export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
         export DYLD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib:${DYLD_LIBRARY_PATH}"
-        pytest python/tests/ -v
+        pytest python/tests/
 
     - name: Verify Accelerate linkage
       run: |

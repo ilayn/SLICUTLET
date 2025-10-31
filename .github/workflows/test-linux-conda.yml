@@ -40,7 +40,7 @@ jobs:
       run: |
         export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
         export LD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
-        pytest python/tests/ -v
+        pytest python/tests/
 
     - name: Show BLAS info
       shell: bash -l {0}

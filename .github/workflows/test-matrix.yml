@@ -74,4 +74,4 @@ jobs:
         elif [[ "$RUNNER_OS" == "Windows" ]]; then
           export PATH="${PWD}/build-install/usr/local/bin:${PATH}"
         fi
-        pytest python/tests/ -v
+        pytest python/tests/

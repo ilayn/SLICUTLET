@@ -47,7 +47,7 @@ jobs:
       run: |
         export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
         export PATH="${PWD}/build-install/usr/local/bin:${PATH}"
-        pytest python/tests/ -v
+        pytest python/tests/
 
     - name: Check compiler used
       shell: bash -l {0}
