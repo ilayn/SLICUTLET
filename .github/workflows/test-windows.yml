@@ -51,13 +51,16 @@ jobs:
         ls -la build-install/usr/local/ || echo "No usr/local"
         echo "=== Searching for slicutlet module ==="
         find build-install -name "*.pyd" -o -name "pyslicutlet*" || echo "No .pyd files found"
+        echo "=== Searching for DLL files ==="
+        find build-install -name "*.dll" -o -name "libslicutlet*" || echo "No DLL files found"
 
     - name: Run tests
       shell: bash -l {0}
       run: |
         # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
         export PYTHONPATH="${PWD}/build-install/lib/site-packages"
-        export PATH="${PWD}/build-install/bin:${PATH}"
+        # Add library directory to PATH so DLLs can be found
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:${PATH}"
         pytest python/tests/
 
     - name: Check compiler used
