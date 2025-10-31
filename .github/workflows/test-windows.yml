@@ -59,8 +59,9 @@ jobs:
       run: |
         # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
         export PYTHONPATH="${PWD}/build-install/lib/site-packages"
-        # Add library directory to PATH so DLLs can be found
-        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:${PATH}"
+        # Add library directories to PATH so DLLs can be found
+        # Need both our DLLs and conda's DLLs (OpenBLAS, etc.)
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:${PATH}"
         pytest python/tests/
 
     - name: Check compiler used
