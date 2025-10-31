@@ -33,10 +33,9 @@ jobs:
     - name: Build SLICUTLET (using LLVM/clang with MinGW target)
       shell: bash -l {0}
       run: |
-        # Use clang from conda-forge which targets MinGW-w64 and supports C11 complex
-        # (not clang-cl which targets MSVC and lacks complex.h support)
-        export CC=clang
-        export CXX=clang++
+        # Force clang to target MinGW-w64 instead of MSVC for C11 complex support
+        export CC="clang --target=x86_64-w64-mingw32"
+        export CXX="clang++ --target=x86_64-w64-mingw32"
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
 
