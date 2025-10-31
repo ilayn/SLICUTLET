@@ -75,14 +75,29 @@ jobs:
         find build-install -name "*.dll" -o -name "libslicutlet*" || echo "No DLL files found"
         echo "=== Conda prefix ==="
         echo "CONDA_PREFIX=$CONDA_PREFIX"
+        echo "=== Current PATH ==="
+        echo "$PATH" | tr ':' '\n' | head -10
         echo "=== Conda Library structure ==="
         ls -la "$CONDA_PREFIX/Library/" || echo "No Library directory"
-        echo "=== Conda Library/bin DLLs (first 20) ==="
-        ls "$CONDA_PREFIX/Library/bin/"*.dll 2>/dev/null | head -20 || echo "No DLLs in Library/bin"
         echo "=== Looking for OpenBLAS DLLs ==="
-        ls "$CONDA_PREFIX/Library/bin/"*openblas*.dll 2>/dev/null || echo "No OpenBLAS DLLs found"
-        echo "=== Looking for libgfortran/mingw DLLs ==="
-        ls "$CONDA_PREFIX/Library/bin/"*gfortran*.dll "$CONDA_PREFIX/Library/bin/"*gcc*.dll "$CONDA_PREFIX/Library/bin/"*mingw*.dll 2>/dev/null || echo "No gfortran/gcc/mingw DLLs found"
+        find "$CONDA_PREFIX/Library/bin" -iname "*openblas*.dll" 2>/dev/null || echo "No OpenBLAS DLLs found"
+        echo "=== Looking for libgfortran/mingw runtime DLLs ==="
+        find "$CONDA_PREFIX/Library/bin" -iname "*gfortran*.dll" -o -iname "*gcc*.dll" -o -iname "*stdc*.dll" -o -iname "*winpthread*.dll" 2>/dev/null || echo "No runtime DLLs found"
+        echo "=== Checking what libslicutlet-0.dll depends on ==="
+        if command -v objdump &> /dev/null; then
+          objdump -p build-install/bin/libslicutlet-0.dll | grep "DLL Name:" || echo "objdump available but no dependencies shown"
+        elif command -v dumpbin &> /dev/null; then
+          dumpbin /dependents build-install/bin/libslicutlet-0.dll || echo "dumpbin available but failed"
+        else
+          echo "Neither objdump nor dumpbin available to check DLL dependencies"
+        fi
+        echo "=== Checking if DLLs are accessible in PATH ==="
+        which libslicutlet-0.dll 2>/dev/null || echo "libslicutlet-0.dll not in PATH"
+        echo "=== Testing Python import directly ==="
+        export PYTHONPATH="${PWD}/build-install/lib/site-packages"
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:${PATH}"
+        python -c "import sys; print('Python executable:', sys.executable); print('Python version:', sys.version)" || echo "Python check failed"
+        python -c "import slicutlet; print('SUCCESS: slicutlet imported')" 2>&1 || echo "FAILED: Could not import slicutlet"
 
     - name: Run tests
       shell: bash -l {0}
