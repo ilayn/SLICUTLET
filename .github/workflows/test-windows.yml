@@ -28,7 +28,8 @@ jobs:
           openblas \
           clang \
           llvm-tools \
-          lld
+          lld \
+          pkg-config
 
     - name: Build SLICUTLET (using LLVM/clang with MinGW target)
       shell: bash -l {0}
@@ -36,6 +37,8 @@ jobs:
         # Force clang to target MinGW-w64 instead of MSVC for C11 complex support
         export CC="clang --target=x86_64-w64-mingw32"
         export CXX="clang++ --target=x86_64-w64-mingw32"
+        # Ensure pkg-config can find conda packages
+        export PKG_CONFIG_PATH="$CONDA_PREFIX/Library/lib/pkgconfig:$PKG_CONFIG_PATH"
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
 

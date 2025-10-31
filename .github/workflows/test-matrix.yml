@@ -38,7 +38,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash -l {0}
       run: |
-        conda install -y meson ninja numpy pytest openblas clang llvm-tools lld
+        conda install -y meson ninja numpy pytest openblas clang llvm-tools lld pkg-config
 
     - name: Build SLICUTLET (Linux/macOS)
       if: runner.os != 'Windows'
@@ -56,6 +56,8 @@ jobs:
         # Force clang to target MinGW-w64 instead of MSVC for C11 complex support
         export CC="clang --target=x86_64-w64-mingw32"
         export CXX="clang++ --target=x86_64-w64-mingw32"
+        # Windows conda uses Library/lib/pkgconfig not lib/pkgconfig
+        export PKG_CONFIG_PATH="$CONDA_PREFIX/Library/lib/pkgconfig:$PKG_CONFIG_PATH"
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
 
