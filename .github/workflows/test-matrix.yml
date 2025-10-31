@@ -34,14 +34,8 @@ jobs:
       run: |
         conda install -y meson ninja numpy pytest openblas pkg-config
 
-    - name: Install dependencies (Windows - Python 3.12 with MKL)
-      if: runner.os == 'Windows' && matrix.python-version == '3.12'
-      shell: bash -l {0}
-      run: |
-        conda install -y meson ninja numpy pytest mkl mkl-devel clang llvm-tools lld pkg-config
-
-    - name: Install dependencies (Windows - Python 3.13 with OpenBLAS)
-      if: runner.os == 'Windows' && matrix.python-version == '3.13'
+    - name: Install dependencies (Windows)
+      if: runner.os == 'Windows'
       shell: bash -l {0}
       run: |
         conda install -y meson ninja numpy pytest openblas clang llvm-tools lld pkg-config
