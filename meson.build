@@ -218,6 +218,16 @@ install_headers('src/include/types.h',            subdir: 'SLICUTLET')
 
 # Generate a pkg-config file for downstreams
 pkgc = import('pkgconfig')
+
+# Only include BLAS/LAPACK in requires if they were found via pkg-config
+# CMake dependencies can't go in requires field
+blas_pc_requires = []
+foreach dep : deps_blaslapack
+  if dep.type_name() == 'pkgconfig'
+    blas_pc_requires += dep
+  endif
+endforeach
+
 pkgc.generate(
   libraries: slicutlet_lib,
   version: meson.project_version(),
@@ -225,8 +235,8 @@ pkgc.generate(
   description: 'SLICOT C translations (early preview)',
   filebase: 'slicutlet',
   subdirs: ['SLICUTLET'],
-  requires: deps_blaslapack,
-  libraries_private: dep_m.found() ? [dep_m] : [],
+  requires: blas_pc_requires,
+  libraries_private: deps_blaslapack + (dep_m.found() ? [dep_m] : []),
 )
 
 # Minimal smoke test executable

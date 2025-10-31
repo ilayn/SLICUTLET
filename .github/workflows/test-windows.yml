@@ -1,0 +1,110 @@
+name: Test Windows (Conda + LLVM/clang)
+
+on:
+  pull_request:
+
+jobs:
+  test-windows:
+    # Skip if commit message contains [skip windows] or [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip windows]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.13'
+        channels: conda-forge
+        channel-priority: strict
+
+    - name: Install dependencies with conda
+      shell: bash -l {0}
+      run: |
+        conda install -y \
+          meson \
+          ninja \
+          numpy \
+          pytest \
+          openblas \
+          clang \
+          llvm-tools \
+          lld \
+          pkg-config \
+          m2w64-gcc-libs
+
+    - name: Build SLICUTLET (using LLVM/clang with MinGW target)
+      shell: bash -l {0}
+      run: |
+        # Force clang to target MinGW-w64 instead of MSVC for C11 complex support
+        export CC="clang --target=x86_64-w64-mingw32"
+        export CXX="clang++ --target=x86_64-w64-mingw32"
+        # Ensure pkg-config can find conda packages
+        export PKG_CONFIG_PATH="$CONDA_PREFIX/Library/lib/pkgconfig:$PKG_CONFIG_PATH"
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+
+    - name: Debug - Check install directory structure
+      # Only run if commit message contains [show debug]
+      if: contains(github.event.head_commit.message, '[show debug]')
+      shell: bash -l {0}
+      run: |
+        echo "=== Checking build-install structure ==="
+        find build-install -type d -name "*site-packages*" || echo "No site-packages found"
+        echo "=== Listing usr/local contents ==="
+        ls -la build-install/usr/local/ || echo "No usr/local"
+        echo "=== Searching for slicutlet module ==="
+        find build-install -name "*.pyd" -o -name "pyslicutlet*" || echo "No .pyd files found"
+        echo "=== Searching for DLL files ==="
+        find build-install -name "*.dll" -o -name "libslicutlet*" || echo "No DLL files found"
+        echo "=== Conda prefix ==="
+        echo "CONDA_PREFIX=$CONDA_PREFIX"
+        echo "=== Current PATH ==="
+        echo "$PATH" | tr ':' '\n' | head -10
+        echo "=== Conda Library structure ==="
+        ls -la "$CONDA_PREFIX/Library/" || echo "No Library directory"
+        echo "=== Looking for OpenBLAS DLLs ==="
+        find "$CONDA_PREFIX/Library/bin" -iname "*openblas*.dll" 2>/dev/null || echo "No OpenBLAS DLLs found"
+        echo "=== Looking for libgfortran/mingw runtime DLLs ==="
+        find "$CONDA_PREFIX/Library/bin" -iname "*gfortran*.dll" -o -iname "*gcc*.dll" -o -iname "*stdc*.dll" -o -iname "*winpthread*.dll" 2>/dev/null || echo "No runtime DLLs found"
+        echo "=== Looking specifically for libgcc_s_seh-1.dll ==="
+        find "$CONDA_PREFIX" -name "libgcc_s_seh-1.dll" 2>/dev/null || echo "libgcc_s_seh-1.dll NOT FOUND in conda env"
+        find /c/Miniconda/envs/test -name "libgcc_s_seh-1.dll" 2>/dev/null || echo "libgcc_s_seh-1.dll NOT FOUND anywhere"
+        echo "=== Checking what libslicutlet-0.dll depends on ==="
+        if command -v objdump &> /dev/null; then
+          objdump -p build-install/bin/libslicutlet-0.dll | grep "DLL Name:" || echo "objdump available but no dependencies shown"
+        elif command -v dumpbin &> /dev/null; then
+          dumpbin /dependents build-install/bin/libslicutlet-0.dll || echo "dumpbin available but failed"
+        else
+          echo "Neither objdump nor dumpbin available to check DLL dependencies"
+        fi
+        echo "=== Checking if DLLs are accessible in PATH ==="
+        which libslicutlet-0.dll 2>/dev/null || echo "libslicutlet-0.dll not in PATH"
+        echo "=== Testing Python import directly ==="
+        export PYTHONPATH="${PWD}/build-install/lib/site-packages"
+        export PATH="${PWD}/build-install/bin:${PWD}/build-install/lib:$CONDA_PREFIX/Library/bin:$CONDA_PREFIX/Library/mingw-w64/bin:${PATH}"
+        echo "PATH after export:"
+        echo "$PATH" | tr ':' '\n' | head -15
+        python -c "import sys; print('Python executable:', sys.executable); print('Python version:', sys.version)" || echo "Python check failed"
+        echo "=== Trying to load DLL with Python ctypes ==="
+        python -c "import ctypes; ctypes.CDLL('${PWD}/build-install/bin/libslicutlet-0.dll'); print('SUCCESS: Direct DLL load worked')" 2>&1 || echo "FAILED: Direct DLL load failed"
+        echo "=== Now trying slicutlet import ==="
+        python -c "import slicutlet; print('SUCCESS: slicutlet imported')" 2>&1 || echo "FAILED: Could not import slicutlet"
+
+    - name: Run tests
+      shell: bash -l {0}
+      run: |
+        # Windows installs to build-install/lib/site-packages (no /usr/local prefix)
+        export PYTHONPATH="${PWD}/build-install/lib/site-packages"
+        # On Windows, Python 3.8+ requires os.add_dll_directory() or DLLs in same dir as .pyd
+        # Copy DLLs to the pyslicutlet directory
+        cp build-install/bin/*.dll build-install/lib/site-packages/slicutlet/ || echo "DLL copy failed"
+        cp "$CONDA_PREFIX/Library/bin/openblas.dll" build-install/lib/site-packages/slicutlet/ || echo "OpenBLAS copy failed"
+        cp "$CONDA_PREFIX/Library/mingw-w64/bin/libgcc_s_seh-1.dll" build-install/lib/site-packages/slicutlet/ || echo "libgcc copy failed"
+        pytest python/tests/
+
+    - name: Check compiler used
+      shell: bash -l {0}
+      run: |
+        cat build/meson-logs/meson-log.txt | grep -i "compiler"

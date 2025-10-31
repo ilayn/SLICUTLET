@@ -1,0 +1,43 @@
+name: Publish to TestPyPI
+
+# This workflow allows manual testing of PyPI upload process
+# Use this to verify wheels work before publishing to production PyPI
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      run_id:
+        description: 'Build Wheels workflow run ID (find in Actions tab)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish-testpypi:
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/slicutlet/
+
+    steps:
+    - name: Download artifacts from build workflow
+      uses: actions/download-artifact@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        run-id: ${{ inputs.run_id }}
+        pattern: wheels-*
+        merge-multiple: true
+        path: dist
+
+    - name: List downloaded wheels
+      run: ls -lah dist/
+
+    - name: Publish to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        print-hash: true
+        verbose: true

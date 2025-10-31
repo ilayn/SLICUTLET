@@ -1,0 +1,52 @@
+name: Test Linux (Conda + MKL)
+
+on:
+  pull_request:
+
+jobs:
+  test-conda-mkl:
+    # Skip if commit message contains [skip linux] or [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip linux]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        python-version: '3.13'
+        channels: conda-forge
+        channel-priority: strict
+
+    - name: Install dependencies with conda
+      shell: bash -l {0}
+      run: |
+        conda install -y \
+          meson \
+          ninja \
+          numpy \
+          pytest \
+          mkl \
+          mkl-devel \
+          compilers
+
+    - name: Build SLICUTLET
+      shell: bash -l {0}
+      run: |
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+
+    - name: Run tests
+      shell: bash -l {0}
+      run: |
+        export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
+        export LD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+        pytest python/tests/
+
+    - name: Show BLAS info
+      shell: bash -l {0}
+      run: |
+        export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
+        export LD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
+        python -c "import numpy as np; np.show_config()"

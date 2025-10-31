@@ -1,0 +1,40 @@
+name: Test macOS (Accelerate)
+
+on:
+  pull_request:
+
+jobs:
+  test-macos:
+    # Skip if commit message contains [skip macos] or [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip macos]') && !contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        python3 -m pip install meson ninja numpy pytest
+
+    - name: Build SLICUTLET (using Accelerate)
+      run: |
+        # Accelerate is built-in on macOS
+        meson setup build -Dpython=true
+        meson install -C build --destdir="${PWD}/build-install"
+
+    - name: Run tests
+      run: |
+        export PYTHONPATH="${PWD}/build-install/usr/local/lib/python3.13/site-packages"
+        export DYLD_LIBRARY_PATH="${PWD}/build-install/usr/local/lib:${DYLD_LIBRARY_PATH}"
+        pytest python/tests/
+
+    - name: Verify Accelerate linkage
+      run: |
+        # Check that the library links to Accelerate framework
+        otool -L build/libslicutlet.*.dylib | grep Accelerate || echo "Warning: Not linked to Accelerate"
