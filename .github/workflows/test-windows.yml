@@ -29,7 +29,8 @@ jobs:
           clang \
           llvm-tools \
           lld \
-          pkg-config
+          pkg-config \
+          m2w64-gcc-libs
 
     - name: Build SLICUTLET (using LLVM/clang with MinGW target)
       shell: bash -l {0}
@@ -63,6 +64,9 @@ jobs:
         find "$CONDA_PREFIX/Library/bin" -iname "*openblas*.dll" 2>/dev/null || echo "No OpenBLAS DLLs found"
         echo "=== Looking for libgfortran/mingw runtime DLLs ==="
         find "$CONDA_PREFIX/Library/bin" -iname "*gfortran*.dll" -o -iname "*gcc*.dll" -o -iname "*stdc*.dll" -o -iname "*winpthread*.dll" 2>/dev/null || echo "No runtime DLLs found"
+        echo "=== Looking specifically for libgcc_s_seh-1.dll ==="
+        find "$CONDA_PREFIX" -name "libgcc_s_seh-1.dll" 2>/dev/null || echo "libgcc_s_seh-1.dll NOT FOUND in conda env"
+        find /c/Miniconda/envs/test -name "libgcc_s_seh-1.dll" 2>/dev/null || echo "libgcc_s_seh-1.dll NOT FOUND anywhere"
         echo "=== Checking what libslicutlet-0.dll depends on ==="
         if command -v objdump &> /dev/null; then
           objdump -p build-install/bin/libslicutlet-0.dll | grep "DLL Name:" || echo "objdump available but no dependencies shown"

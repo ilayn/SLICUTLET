@@ -38,7 +38,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash -l {0}
       run: |
-        conda install -y meson ninja numpy pytest openblas clang llvm-tools lld pkg-config
+        conda install -y meson ninja numpy pytest openblas clang llvm-tools lld pkg-config m2w64-gcc-libs
 
     - name: Build SLICUTLET (Linux/macOS)
       if: runner.os != 'Windows'
