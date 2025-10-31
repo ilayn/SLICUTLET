@@ -1258,6 +1258,6 @@ static struct PyModuleDef pyslicutlet_module = {
     .m_slots = module_slots,
 };
 
-PyMODINIT_FUNC PyInit_pyslicutlet(void) {
+PyMODINIT_FUNC PyInit_slicutletlib(void) {
     return PyModuleDef_Init(&pyslicutlet_module);
 }

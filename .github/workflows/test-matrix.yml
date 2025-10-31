@@ -116,7 +116,7 @@ jobs:
       run: |
         PYTHON_VERSION="${{ matrix.python-version }}"
         PYTHON_VERSION_COMPACT="${PYTHON_VERSION//./}"  # Remove dots: 3.13 -> 313
-        
+
         # Windows uses different install paths than Linux/macOS
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           # Windows installs to build-install/lib/site-packages (no /usr/local prefix)

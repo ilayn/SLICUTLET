@@ -7,7 +7,7 @@ A Python interface to selected SLICOT routines translated to C.
 Refer to individual function docstrings for usage details.
 """
 
-from slicutlet.pyslicutlet import (
+from slicutlet.slicutletlib import (
     py_ab01nd as ab01nd,
     py_ab04md as ab04md,
     py_ab05md as ab05md,

@@ -7,8 +7,8 @@ numpy_include_result = run_command(
 )
 incdir_numpy = numpy_include_result.stdout().strip()
 
-pyslicutlet_module = py.extension_module(
-    'pyslicutlet',
+slicutletlib_module = py.extension_module(
+    'slicutletlib',
     'slicutletmodule.c',
     include_directories: [inc_pub, inc_root, inc_src, include_directories(incdir_numpy)],
     link_with: slicutlet_lib,
