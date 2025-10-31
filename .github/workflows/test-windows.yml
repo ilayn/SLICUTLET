@@ -1,4 +1,4 @@
-name: Test Windows (Conda + clang)
+name: Test Windows (Conda + MinGW)
 
 on:
   pull_request:
@@ -26,21 +26,14 @@ jobs:
           numpy \
           pytest \
           openblas \
-          clang \
-          clangxx \
-          compiler-rt
+          m2w64-toolchain
 
-    - name: Build SLICUTLET (using clang, not MSVC)
+    - name: Build SLICUTLET (using MinGW gcc with C11 complex support)
       shell: bash -l {0}
       run: |
-        # Set environment to use clang instead of MSVC
-        export CC=clang
-        export CXX=clang++
+        # m2w64 gcc supports C11 complex, unlike clang-cl
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
-      env:
-        CC: clang
-        CXX: clang++
 
     - name: Run tests
       shell: bash -l {0}

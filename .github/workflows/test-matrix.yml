@@ -38,7 +38,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash -l {0}
       run: |
-        conda install -y meson ninja numpy pytest openblas clang clangxx compiler-rt
+        conda install -y meson ninja numpy pytest openblas m2w64-toolchain
 
     - name: Build SLICUTLET (Linux/macOS)
       if: runner.os != 'Windows'
@@ -47,17 +47,13 @@ jobs:
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
 
-    - name: Build SLICUTLET (Windows with clang)
+    - name: Build SLICUTLET (Windows with MinGW)
       if: runner.os == 'Windows'
       shell: bash -l {0}
       run: |
-        export CC=clang
-        export CXX=clang++
+        # Use MinGW gcc which supports C11 complex
         meson setup build -Dpython=true
         meson install -C build --destdir="${PWD}/build-install"
-      env:
-        CC: clang
-        CXX: clang++
 
     - name: Run tests
       shell: bash -l {0}
