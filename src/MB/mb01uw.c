@@ -2,7 +2,8 @@
 #include "../include/slc_blaslapack.h"
 #include <math.h>
 
-void mb01uw(
+void
+mb01uw(
     const i32 side,
     const i32 trans,
     const i32 m,
