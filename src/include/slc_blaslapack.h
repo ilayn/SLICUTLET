@@ -69,19 +69,25 @@ typedef int32_t lapack_logical;
  */
 
 // BLAS routines
+void   SLC_F77_FUNC(daxpy , DAXPY )(const int* n, const f64* alpha, const f64* x, const int* incx, f64* y, const int* incy);
 void   SLC_F77_FUNC(dcopy , DCOPY )(const int* n, const f64* dx, const int* incx, f64* dy, const int* incy);
 void   SLC_F77_FUNC(dgemm , DGEMM )(const char* transa, const char* transb, const int* m, const int* n, const int* k, const f64* alpha, const f64* a, const int* lda, const f64* b, const int* ldb, const f64* beta, f64* c, const int* ldc);
 void   SLC_F77_FUNC(dgemv , DGEMV )(const char* trans, const int* m, const int* n, const f64* alpha, const f64* a, const int* lda, const f64* x, const int* incx, const f64* beta, f64* y, const int* incy);
 f64    SLC_F77_FUNC(dnrm2 , DNRM2 )(const int* n, const f64* x, const int* incx);
 void   SLC_F77_FUNC(dscal , DSCAL )(const int* n, const f64* a, f64* x, const int* incx);
 void   SLC_F77_FUNC(dswap , DSWAP )(const int* n, f64* x, const int* incx, f64* y, const int* incy);
+void   SLC_F77_FUNC(dsyr2k, DSYR2K)(const char* uplo, const char* trans, const int* n, const int* k, const f64* alpha, const f64* a, const int* lda, const f64* b, const int* ldb, const f64* beta, f64* c, const int* ldc);
+void   SLC_F77_FUNC(dtrmm,  DTRMM )(const char* side, const char* uplo, const char* transa, const char* diag, const int* m, const int* n, const f64* alpha, const f64* a, const int* lda, f64* b, const int* ldb);
+void   SLC_F77_FUNC(dtrmv , DTRMV )(const char* uplo, const char* trans, const char* diag, const int* n, const f64* a, const int* lda, f64* x, const int* incx);
 void   SLC_F77_FUNC(dtrsm , DTRSM )(const char* side, const char* uplo, const char* transa, const char* diag, const int* m, const int* n, const f64* alpha, const f64* a, const int* lda, f64* b, const int* ldb);
 int    SLC_F77_FUNC(idamax, IDAMAX)(const int* n, const f64* x, const int* incx);
 void   SLC_F77_FUNC(zgemm , ZGEMM )(const char* transa, const char* transb, const int* m, const int* n, const int* k, const c128* alpha, const c128* a, const int* lda, const c128* b, const int* ldb, const c128* beta, c128* c, const int* ldc);
 void   SLC_F77_FUNC(zswap , ZSWAP )(const int* n, c128* x, const int* incx, c128* y, const int* incy);
+void   SLC_F77_FUNC(ztrmm,  ZTRMM )(const char* side, const char* uplo, const char* transa, const char* diag, const int* m, const int* n, const c128* alpha, const c128* a, const int* lda, c128* b, const int* ldb);
 
 // LAPACK routines
 void   SLC_F77_FUNC(dgecon, DGECON)(const char* norm, const int* n, const f64* a, const int* lda, const f64* anorm, f64* rcond, f64* work, int* iwork, int* info);
+void   SLC_F77_FUNC(dgeqrf, DGEQRF)(const int* m, const int* n, f64* a, const int* lda, f64* tau, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(dgetrf, DGETRF)(const int* m, const int* n, f64* a, const int* lda, int* ipiv, int* info);
 void   SLC_F77_FUNC(dgetri, DGETRI)(const int* n, f64* a, const int* lda, const int* ipiv, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(dgetrs, DGETRS)(const char* trans, const int* n, const int* nrhs, const f64* a, const int* lda, const int* ipiv, f64* b, const int* ldb, int* info);
@@ -100,6 +106,8 @@ void   SLC_F77_FUNC(dlassq, DLASSQ)(const int* n, const f64* x, const int* incx,
 void   SLC_F77_FUNC(dormqr, DORMQR)(const char* side, const char* trans, const int* m, const int* n, const int* k, const f64* a, const int* lda, const f64* tau, f64* c, const int* ldc, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(dorgqr, DORGQR)(const int* m, const int* n, const int* k, f64* a, const int* lda, const f64* tau, f64* work, const int* lwork, int* info);
 void   SLC_F77_FUNC(drscl , DRSCL )(const int* n, const f64* sa, f64* sx, const int* incx);
+void   SLC_F77_FUNC(zgeqrf, ZGEQRF)(const int* m, const int* n, c128* a, const int* lda, c128* tau, c128* work, const int* lwork, int* info);
+void   SLC_F77_FUNC(zlacpy, ZLACPY)(const char* uplo, const int* m, const int* n, const c128* a, const int* lda, c128* b, const int* ldb);
 f64    SLC_F77_FUNC(zlange, ZLANGE)(const char* norm, const int* m, const int* n, const c128* a, const int* lda, f64* work);
 void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int* n, const c128* x, const int* incx, f64* scale, f64* sumsq);
 
@@ -117,18 +125,24 @@ void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int* n, const c128* x, const int* incx
 
 
 // Simple alias macros for use at call sites
-#define SLC_DCOPY   SLC_F77_FUNC(dcopy,  DCOPY)
-#define SLC_DGEMM   SLC_F77_FUNC(dgemm,  DGEMM)
-#define SLC_DGEMV   SLC_F77_FUNC(dgemv,  DGEMV)
-#define SLC_DNRM2   SLC_F77_FUNC(dnrm2,  DNRM2)
-#define SLC_DSCAL   SLC_F77_FUNC(dscal,  DSCAL)
-#define SLC_DSWAP   SLC_F77_FUNC(dswap,  DSWAP)
-#define SLC_DTRSM   SLC_F77_FUNC(dtrsm,  DTRSM)
+#define SLC_DAXPY   SLC_F77_FUNC(daxpy,  DAXPY )
+#define SLC_DCOPY   SLC_F77_FUNC(dcopy,  DCOPY )
+#define SLC_DGEMM   SLC_F77_FUNC(dgemm,  DGEMM )
+#define SLC_DGEMV   SLC_F77_FUNC(dgemv,  DGEMV )
+#define SLC_DNRM2   SLC_F77_FUNC(dnrm2,  DNRM2 )
+#define SLC_DSCAL   SLC_F77_FUNC(dscal,  DSCAL )
+#define SLC_DSWAP   SLC_F77_FUNC(dswap,  DSWAP )
+#define SLC_DSYR2K  SLC_F77_FUNC(dsyr2k, DSYR2K)
+#define SLC_DTRMM   SLC_F77_FUNC(dtrmm,  DTRMM )
+#define SLC_DTRMV   SLC_F77_FUNC(dtrmv,  DTRMV )
+#define SLC_DTRSM   SLC_F77_FUNC(dtrsm,  DTRSM )
 #define SLC_IDAMAX  SLC_F77_FUNC(idamax, IDAMAX)
-#define SLC_ZGEMM   SLC_F77_FUNC(zgemm,  ZGEMM)
-#define SLC_ZSWAP   SLC_F77_FUNC(zswap,  ZSWAP)
+#define SLC_ZGEMM   SLC_F77_FUNC(zgemm,  ZGEMM )
+#define SLC_ZSWAP   SLC_F77_FUNC(zswap,  ZSWAP )
+#define SLC_ZTRMM   SLC_F77_FUNC(ztrmm,  ZTRMM )
 
 #define SLC_DGECON  SLC_F77_FUNC(dgecon, DGECON)
+#define SLC_DGEQRF  SLC_F77_FUNC(dgeqrf, DGEQRF)
 #define SLC_DGETRF  SLC_F77_FUNC(dgetrf, DGETRF)
 #define SLC_DGETRI  SLC_F77_FUNC(dgetri, DGETRI)
 #define SLC_DGETRS  SLC_F77_FUNC(dgetrs, DGETRS)
@@ -147,6 +161,8 @@ void   SLC_F77_FUNC(zlassq, ZLASSQ)(const int* n, const c128* x, const int* incx
 #define SLC_DORMQR  SLC_F77_FUNC(dormqr, DORMQR)
 #define SLC_DORGQR  SLC_F77_FUNC(dorgqr, DORGQR)
 #define SLC_DRSCL   SLC_F77_FUNC(drscl,  DRSCL)
+#define SLC_ZGEQRF  SLC_F77_FUNC(zgeqrf, ZGEQRF)
+#define SLC_ZLACPY  SLC_F77_FUNC(zlacpy, ZLACPY)
 #define SLC_ZLANGE  SLC_F77_FUNC(zlange, ZLANGE)
 #define SLC_ZLASSQ  SLC_F77_FUNC(zlassq, ZLASSQ)
 
