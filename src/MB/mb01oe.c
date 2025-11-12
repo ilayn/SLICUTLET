@@ -14,16 +14,15 @@ mb01oe(
     const f64* h,
     const i32 ldh,
     f64* e,
-    const i32 lde,
-    i32* info
+    const i32 lde
 )
 {
     i32 i, j, j1;
     f64 temp, beta2;
-    f64 dbl1 = 1.0, dbl0 = 0.0, dbl2 = 2.0;
+    f64 dbl1 = 1.0, dbl0 = 0.0;
     i32 int1 = 1, int0 = 0;
 
-    *info = 0;
+    i32* info = 0;
     if (uplo != 0 && uplo != 1) {
         *info = -1;
     } else if (trans != 0 && trans != 1) {

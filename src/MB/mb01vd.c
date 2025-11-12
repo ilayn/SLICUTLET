@@ -68,10 +68,10 @@ void mb01vd(
 
     if (alpha == dbl0) {
         if (beta == dbl0) {
-            dlaset("Full", mc, nc, &dbl0, &dbl0, c, &ldc);
+            SLC_DLASET("Full", mc, nc, &dbl0, &dbl0, c, &ldc);
         } else if (beta != dbl1) {
             for (j = 0; j < *nc; j++) {
-                dscal(mc, &beta, &c[j*ldc], &int1);
+                SLC_DSCAL(mc, &beta, &c[j*ldc], &int1);
             }
         }
         return;
@@ -108,9 +108,9 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else if (aij == dbl1) {
-                                    dcopy(&mb, &b[k*ldb], &int1, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &b[k*ldb], &int1, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -152,7 +152,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -278,7 +278,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -320,7 +320,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -368,9 +368,9 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else if (aij == dbl1) {
-                                    dcopy(&mb, &b[k*ldb], &int1, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &b[k*ldb], &int1, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -412,7 +412,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -538,7 +538,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -580,7 +580,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -628,9 +628,9 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else if (aij == dbl1) {
-                                    dcopy(&mb, &b[k], &ldb, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &b[k], &ldb, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -672,7 +672,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -798,7 +798,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -840,7 +840,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[i + j*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -888,9 +888,9 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else if (aij == dbl1) {
-                                    dcopy(&mb, &b[k], &ldb, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &b[k], &ldb, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -932,7 +932,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dcopy(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
+                                    SLC_DCOPY(&mb, &dbl0, &int0, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -1058,7 +1058,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {
@@ -1100,7 +1100,7 @@ void mb01vd(
                             for (i = 0; i < ma; i++) {
                                 aij = alpha * a[j + i*lda];
                                 if (aij == dbl0) {
-                                    dscal(&mb, &beta, &c[ic + jc*ldc], &int1);
+                                    SLC_DSCAL(&mb, &beta, &c[ic + jc*ldc], &int1);
                                 } else {
                                     lc = ic;
                                     for (l = 0; l < mb; l++) {

@@ -22,9 +22,10 @@ mb01ld(
     i32* info
 )
 {
+    (void)k; // Unused parameter
     i32 i, j, m2;
     f64 dbl1 = 1.0, dbl0 = 0.0;
-    i32 int1 = 1, int0 = 0;
+    i32 int0 = 0;
 
     *info = 0;
     if (uplo != 0 && uplo != 1) {
@@ -91,7 +92,7 @@ mb01ld(
     } else {
         SLC_DLACPY("F", &(i32){n-1}, &m, &a[j-1], &lda, dwork, &(i32){n-1});
         SLC_DTRMM("L", (uplo ? "L" : "U"), "N", "N", &(i32){n-1}, &m, &dbl1, &x[(i-1) + (j-1)*ldx], &ldx, dwork, &(i32){n-1});
-        SLC_DSYR2K((uplo ? "L" : "U"), (trans ? "T" : "N"), &m, &(i32){n-1}, &beta, &a[i-1], &lda, &dwork, &(i32){n-1}, &alpha, r, &ldr);
+        SLC_DSYR2K((uplo ? "L" : "U"), (trans ? "T" : "N"), &m, &(i32){n-1}, &beta, &a[i-1], &lda, dwork, &(i32){n-1}, &alpha, r, &ldr);
     }
 
     return;
