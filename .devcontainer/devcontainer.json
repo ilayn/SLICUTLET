@@ -15,7 +15,9 @@
   },
 
   "mounts": [
-    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached,readonly",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached"
   ],
 
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
@@ -23,7 +25,8 @@
 
   "remoteEnv": {
     "PYTHONPATH": "/workspace/build-install/usr/local/lib/python3.11/site-packages",
-    "LD_LIBRARY_PATH": "/workspace/build-install/usr/local/lib/aarch64-linux-gnu:${LD_LIBRARY_PATH}"
+    "LD_LIBRARY_PATH": "/workspace/build-install/usr/local/lib/aarch64-linux-gnu:${LD_LIBRARY_PATH}",
+    "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}"
   },
 
   "postCreateCommand": "bash .devcontainer/setup.sh",
