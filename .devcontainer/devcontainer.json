@@ -18,6 +18,9 @@
     "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
   ],
 
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+
   "postCreateCommand": "bash .devcontainer/setup.sh",
 
   "customizations": {

@@ -18,6 +18,9 @@ pip install meson ninja numpy Cython pytest pytest-cov ruff
 echo "Initializing submodules..."
 git submodule update --init --recursive
 
+echo "Cleaning any existing build directory..."
+rm -rf build
+
 echo "Setting up build directory..."
 meson setup build -Dpython=true
 
