@@ -15,6 +15,9 @@ echo "Installing Python dependencies..."
 pip install --upgrade pip
 pip install meson ninja numpy Cython pytest pytest-cov ruff
 
+echo "Installing Claude Code CLI..."
+curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code/main/install.sh | sh
+
 echo "Initializing submodules..."
 git submodule update --init --recursive
 
