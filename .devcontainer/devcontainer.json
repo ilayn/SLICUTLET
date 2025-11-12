@@ -21,6 +21,11 @@
   "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
   "workspaceFolder": "/workspace",
 
+  "remoteEnv": {
+    "PYTHONPATH": "/workspace/build-install/usr/local/lib/python3.11/site-packages",
+    "LD_LIBRARY_PATH": "/workspace/build-install/usr/local/lib/aarch64-linux-gnu:${LD_LIBRARY_PATH}"
+  },
+
   "postCreateCommand": "bash .devcontainer/setup.sh",
 
   "customizations": {

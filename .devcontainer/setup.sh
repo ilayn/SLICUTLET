@@ -24,4 +24,11 @@ rm -rf build
 echo "Setting up build directory..."
 meson setup build -Dpython=true
 
-echo "Dev container ready! Run: meson compile -C build"
+echo "Building project..."
+meson compile -C build
+
+echo "Installing to local directory..."
+meson install -C build --destdir="$(pwd)/build-install"
+
+echo "Dev container ready!"
+echo "PYTHONPATH is set to: /workspace/build-install/usr/local/lib/python3.11/site-packages"
