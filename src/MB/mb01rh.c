@@ -2,7 +2,7 @@
 #include "../include/slc_blaslapack.h"
 #include <math.h>
 
-void mb01oh(const i32, const i32, const i32, const f64, const f64, f64*, const i32, const f64*, const i32, const f64*, const i32);
+void mb01oh(const i32 uplo, const i32 trans, const i32 n, const f64 alpha, const f64 beta, f64* r, const i32 ldr, const f64* h, const i32 ldh, f64* a, const i32 lda);
 
 void
 mb01rh(

@@ -19,7 +19,7 @@ mb01os(
     i32 i, j, j3;
     f64 temp;
     f64 dbl1 = 1.0, dbl0 = 0.0;
-    i32 int1 = 1, int0 = 0;
+    i32 int1 = 1;
 
     *info = 0;
     if (uplo != 0 && uplo != 1) {

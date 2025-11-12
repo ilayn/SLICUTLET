@@ -11,7 +11,7 @@ void mb01uz(
     const c128 alpha,
     c128 *t,
     const i32 ldt,
-    const c128 *a,
+    c128 *a,
     const i32 lda,
     c128 *zwork,
     const i32 lzwork,
@@ -19,6 +19,7 @@ void mb01uz(
 )
 {
     const f64 dbl0 = 0.0, dbl1 = 1.0;
+    const c128 cdbl0 = {0.0, 0.0};
     const i32 int0 = 0, int1 = 1, minmn = MIN(m, n), maxmn = MAX(m, n);
     i32 k, l;
 
@@ -35,7 +36,7 @@ void mb01uz(
     // Ensure that at least two rows or columns of A fit into the
     // workspace, if optimal workspace is required.
     i32 workmin = 1;
-    if (alpha != dbl0 && minmn > 0) {
+    if (alpha != cdbl0 && minmn > 0) {
         workmin = MAX(workmin, k);
     }
     i32 lquery = (lzwork == -1);
@@ -55,7 +56,7 @@ void mb01uz(
     } else if (lda < MAX(1, m)) {
         *info = -10;
     } else if (lquery) {
-        if ((alpha != dbl0) && (minmn > 0)) {
+        if ((alpha != cdbl0) && (minmn > 0)) {
             SLC_ZGEQRF(&m, &maxmn, a, &lda, zwork, zwork, &(i32){-1}, info);
             i32 workopt = MAX(workmin, MAX(2*l, (i32)zwork[0]));
             zwork[0] = (f64)workopt;
@@ -77,8 +78,8 @@ void mb01uz(
         return;
     }
 
-    if (alpha == dbl0) {
-        SLC_DLASET("F", &m, &n, &dbl0, &dbl0, t, &ldt);
+    if (alpha == cdbl0) {
+        SLC_ZLASET("F", &m, &n, &cdbl0, &cdbl0, t, &ldt);
         return;
     }
 

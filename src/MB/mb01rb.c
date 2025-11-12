@@ -17,7 +17,7 @@ mb01rb(
     const f64 beta,
     f64* r,
     const i32 ldr,
-    const f64* a,
+    f64* a,
     const i32 lda,
     const f64* b,
     const i32 ldb,
@@ -25,10 +25,10 @@ mb01rb(
 )
 {
     const i32 n1l = 128, n1p = 512, n2l = 40, n2p = 128, nbs = 48;
-    i32 i, ib, j, jb, mn, mx, n1, n2, nb, nbmin, nx;
+    i32 i, ib, j, jb, mn, mx, n1 = 0, n2 = 0, nb, nbmin = 0, nx;
     f64 d[1];
     f64 dbl1 = 1.0, dbl0 = 0.0;
-    i32 int1 = 1, int0 = 0, intm1 = -1;
+    i32 int0 = 0, intm1 = -1;
 
     *info = 0;
     if (side != 0 && side != 1) {

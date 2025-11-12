@@ -74,20 +74,20 @@ mb01ud(
         }
 
         if (m > 2) {
-            dswap((i32){m - 2}, &h[2 + 1 * ldh], &(i32){ldh + 1}, &h[2], 1);
+            SLC_DSWAP(&(i32){m - 2}, &h[2 + 1 * ldh], &(i32){ldh + 1}, &h[2], &int1);
         }
 
     } else {
         if (trans == 1) {
             for (i32 j = 0; j < n - 1; ++j) {
                 if (h[(j + 1) + j * ldh] != dbl0) {
-                    daxpy(&m, &(f64){alpha * h[(j + 1) + j * ldh]}, &a[j * lda], &int1, &b[(j + 1) * ldb], &int1);
+                    SLC_DAXPY(&m, &(f64){alpha * h[(j + 1) + j * ldh]}, &a[j * lda], &int1, &b[(j + 1) * ldb], &int1);
                 }
             }
         } else {
             for (i32 j = 0; j < n - 1; ++j) {
                 if (h[(j + 1) + j * ldh] != dbl0) {
-                    daxpy(&m, &(f64){alpha * h[(j + 1) + j * ldh]}, &a[(j + 1) * lda], &int1, &b[j * ldb], &int1);
+                    SLC_DAXPY(&m, &(f64){alpha * h[(j + 1) + j * ldh]}, &a[(j + 1) * lda], &int1, &b[j * ldb], &int1);
                 }
             }
         }

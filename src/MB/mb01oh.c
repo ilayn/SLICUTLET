@@ -14,16 +14,15 @@ mb01oh(
     const f64* h,
     const i32 ldh,
     f64* a,
-    const i32 lda,
-    i32* info
+    const i32 lda
 )
 {
-    i32 i, j, j1;
+    i32 i, j;
     f64 temp, beta2;
-    f64 dbl1 = 1.0, dbl0 = 0.0, dbl2 = 2.0;
+    f64 dbl1 = 1.0, dbl0 = 0.0;
     i32 int1 = 1, int0 = 0;
 
-    *info = 0;
+    i32* info = 0;
     if (uplo != 0 && uplo != 1) {
         *info = -1;
     } else if (trans != 0 && trans != 1) {
@@ -131,8 +130,6 @@ mb01oh(
             }
         } else {
             for (j = 0; j < n-1; j++) {
-                j1 = j + 1;
-
                 for (i = j; i < n; i++) {
                     temp = beta*(SLC_DDOT(&(i32){j+2}, &h[i*ldh], &int1, &a[j*lda], &int1) +
                                  SLC_DDOT(&(i32){j+2}, &a[i*lda], &int1, &h[j*ldh], &int1));

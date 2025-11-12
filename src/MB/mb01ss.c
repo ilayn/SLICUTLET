@@ -3,7 +3,7 @@
 #include <math.h>
 
 void
-mb01sd(
+mb01ss(
     const i32 jobs,  // 0: "D", 1: "I"
     const i32 uplo,  // 0: upper, 1: lower
     const i32 n,

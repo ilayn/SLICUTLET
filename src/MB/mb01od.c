@@ -2,7 +2,7 @@
 #include "../include/slc_blaslapack.h"
 #include <math.h>
 
-void mb01oe(const i32, const i32, const i32, const f64, const f64, f64*, const i32, const f64*, const i32, const f64*, const i32);
+void mb01oe(const i32 uplo, const i32 trans, const i32 n, const f64 alpha, const f64 beta, f64* r, const i32 ldr, const f64* h, const i32 ldh, f64* e, const i32 lde);
 
 void
 mb01od(
@@ -17,7 +17,7 @@ mb01od(
     const i32 ldh,
     f64* x,
     const i32 ldx,
-    const f64* e,
+    f64* e,
     const i32 lde,
     f64* dwork,
     const i32 ldwork,

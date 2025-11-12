@@ -25,7 +25,7 @@ void mb01wd(
     const f64 dbl0 = 0.0, dbl1 = 1.0;
     const i32 int0 = 0, int1 = 1;
     i32* info2;
-    char* side, negtrans;
+    char *side, *negtrans;
 
     *info = 0;
 
@@ -130,14 +130,14 @@ void mb01wd(
         //                alpha*A*T*T'*A' + beta*R, otherwise.
 
         if ((hess) && (n > 2)) {
-            mb01yd(uplo, 1 - trans, n, n, 1, alpha, beta, a, lda, r, ldr, &info2);
+            mb01yd(uplo, 1 - trans, n, n, 1, alpha, beta, a, lda, r, ldr, info2);
         } else {
             SLC_DSYRK((uplo ? "L" : "U"), negtrans, &n, &n, &alpha, a, &lda, &beta, r, &ldr);
         }
 
         // Compute (in R) -alpha*T'*T + R, if TRANS = 'N', or
         //                -alpha*T*T' + R, otherwise.
-        mb01yd(uplo, 1 - trans, n, n, 0, -alpha, 1.0, t, ldt, r, ldr, &info2);
+        mb01yd(uplo, 1 - trans, n, n, 0, -alpha, 1.0, t, ldt, r, ldr, info2);
     }
 
     return;
