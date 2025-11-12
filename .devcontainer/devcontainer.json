@@ -43,9 +43,7 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "charliermarsh.ruff",
-        "ms-vscode.cpptools",
-        "mesonbuild.mesonbuild",
-        "Anthropic.claude-code"
+        "ms-vscode.cpptools"
       ]
     }
   }
