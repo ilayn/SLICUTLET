@@ -80,8 +80,8 @@ void mb01ry(const i32 side, const i32 uplo, const i32 trans, const i32 m, const 
 void mb01sd(const i32 jobs, const i32 m, const i32 n, f64* a, const i32 lda, const f64* r, const f64* c);
 void mb01ss(const i32 jobs, const i32 uplo, const i32 n, f64* a, const i32 lda, const f64* d);
 void mb01td(const i32 n, const f64 *a, const i32 lda, f64 *b, const i32 ldb, f64 *dwork, i32 *info);
-void mb01ud(const i32 side, const i32 trans, const i32 m, const i32 n, const f64 alpha, const f64* h, const i32 ldh, const f64* a, const i32 lda, f64* b, const i32 ldb, i32* info);
-void mb01uw(const i32 side, const i32 trans, const i32 m, const i32 n, const f64 alpha, const f64 *h, const i32 ldh, f64 *a, const i32 lda, f64 *dwork, const i32 ldwork, i32 *info);
+void mb01ud(const i32 side, const i32 trans, const i32 m, const i32 n, const f64 alpha, f64* h, const i32 ldh, const f64* a, const i32 lda, f64* b, const i32 ldb, i32* info);
+void mb01uw(const i32 side, const i32 trans, const i32 m, const i32 n, const f64 alpha, f64 *h, const i32 ldh, f64 *a, const i32 lda, f64 *dwork, const i32 ldwork, i32 *info);
 void mb01ux(const i32 side, const i32 uplo, const i32 trans, const i32 m, const i32 n, const f64 alpha, const f64 *t, const i32 ldt, f64 *a, const i32 lda, f64 *dwork, const i32 ldwork, i32 *info);
 void mb01uy(const i32 side, const i32 uplo, const i32 trans, const i32 m, const i32 n, const f64 alpha, f64 *t, const i32 ldt, const f64 *a, const i32 lda, f64 *dwork, const i32 ldwork, i32 *info);
 void mb01uz(const i32 side, const i32 uplo, const i32 trans, const i32 m, const i32 n, const c128 alpha, c128 *t, const i32 ldt, c128 *a, const i32 lda, c128 *zwork, const i32 lzwork, i32 *info);

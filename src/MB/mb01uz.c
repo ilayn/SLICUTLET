@@ -1,6 +1,7 @@
 #include "slicutlet.h"
 #include "../include/slc_blaslapack.h"
 #include <math.h>
+#include <complex.h>
 
 void mb01uz(
     const i32 side,
@@ -19,7 +20,7 @@ void mb01uz(
 )
 {
     const f64 dbl0 = 0.0, dbl1 = 1.0;
-    const c128 cdbl0 = {0.0, 0.0};
+    const c128 cdbl0 = 0.0 + 0.0*I;
     const i32 int0 = 0, int1 = 1, minmn = MIN(m, n), maxmn = MAX(m, n);
     i32 k, l;
 

@@ -9,7 +9,7 @@ mb01uw(
     const i32 m,
     const i32 n,
     const f64 alpha,
-    const f64 *h,
+    f64 *h,
     const i32 ldh,
     f64 *a,
     const i32 lda,
@@ -36,9 +36,7 @@ mb01uw(
     } else if (lda < MAX(1, m)) {
         *info = -9;
     } else if (ldwork < 0 ||
-               (alpha != dbl0 && MIN(m, n) > 0 &&
-                ((side == 0 && ldwork < m - 1) ||
-                 (side == 1 && ldwork < n - 1)))) {
+               (alpha != dbl0 && MIN(m, n) > 0 && ldwork < m * n)) {
         *info = -11;
     }
 
@@ -76,7 +74,9 @@ mb01uw(
 
     if (side == 0) {
         if (m > 2) {
-            SLC_DSWAP(&(i32){m - 2}, &h[2 + 1 * ldh], &(i32){ldh + 1}, &h[2 + 0 * ldh], &int1);
+            i32 cnt = m - 2;
+            i32 inc = ldh + 1;
+            SLC_DSWAP(&cnt, &h[2 + 1*ldh], &inc, &h[2], &int1);
         }
 
         if (trans == 1) {
@@ -102,7 +102,7 @@ mb01uw(
         if (m > 2) {
             i32 cnt = m - 2;
             i32 inc = ldh + 1;
-            SLC_DSWAP(&cnt, &h[2 + 1 * ldh], &inc, &h[2 + 0 * ldh], &int1);
+            SLC_DSWAP(&cnt, &h[2 + 1*ldh], &inc, &h[2], &int1);
         }
 
     } else {

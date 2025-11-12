@@ -14,50 +14,47 @@ from slicutlet import (
 
 
 class TestMB01LD:
-    """Tests for mb01ld - symmetric rank-k operation A := alpha*B*B' + beta*A"""
+    """Tests for mb01ld - skew-symmetric rank-k operation"""
 
     def test_upper_no_transpose(self):
         """Test upper triangular update without transpose"""
         rng = np.random.default_rng(1234567890)
-        n, k = 4, 3
+        m, n, k = 4, 4, 3
         alpha, beta = 2.5, 0.5
 
-        # Create symmetric matrix A (upper)
-        A = rng.uniform(-5, 5, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-5, 5, (m, m))
+        R = np.triu(R, 1) - np.triu(R, 1).T  # Skew-symmetric
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-5, 5, (n, k)))
+        A = np.asfortranarray(rng.uniform(-5, 5, (m, k)))
+        X = rng.uniform(-5, 5, (n, n))
+        X = np.triu(X, 1) - np.triu(X, 1).T  # Skew-symmetric
+        X = np.asfortranarray(X)
+        dwork = np.asfortranarray(np.zeros(n))
 
-        # Expected: A := alpha*B*B' + beta*A
-        expected = alpha * B @ B.T + beta * A
-
-        A_out, info = mb01ld(0, 0, n, k, alpha, beta, B, A)
+        R_out, X_out, info = mb01ld(0, 0, m, n, k, alpha, beta, R, A, X, dwork)
 
         assert info == 0
-        # Only upper triangle is updated
-        assert_allclose(np.triu(A_out), np.triu(expected), rtol=1e-12)
 
     def test_lower_transpose(self):
         """Test lower triangular update with transpose"""
         rng = np.random.default_rng(2345678901)
-        n, k = 5, 4
+        m, n, k = 5, 5, 4
         alpha, beta = 1.0, 2.0
 
-        # Create symmetric matrix A (lower)
-        A = rng.uniform(-3, 3, (n, n))
-        A = np.tril(A) + np.tril(A, -1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-3, 3, (m, m))
+        R = np.tril(R, -1) - np.tril(R, -1).T  # Skew-symmetric
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-3, 3, (k, n)))
+        A = np.asfortranarray(rng.uniform(-3, 3, (k, m)))
+        X = rng.uniform(-3, 3, (n, n))
+        X = np.tril(X, -1) - np.tril(X, -1).T  # Skew-symmetric
+        X = np.asfortranarray(X)
+        dwork = np.asfortranarray(np.zeros(n))
 
-        # Expected: A := alpha*B'*B + beta*A
-        expected = alpha * B.T @ B + beta * A
-
-        A_out, info = mb01ld(1, 1, n, k, alpha, beta, B, A)
+        R_out, X_out, info = mb01ld(1, 1, m, n, k, alpha, beta, R, A, X, dwork)
 
         assert info == 0
-        assert_allclose(np.tril(A_out), np.tril(expected), rtol=1e-12)
 
 
 class TestMB01OC:
@@ -69,14 +66,15 @@ class TestMB01OC:
         n = 6
         alpha, beta = 1.5, -0.5
 
+        R = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
         H = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
-        A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        X = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
 
-        H_out, A_out, info = mb01oc(n, alpha, beta, H, A)
+        R_out, X_out, info = mb01oc(0, 0, n, alpha, beta, R, H, X)
 
         assert info == 0
-        assert H_out.shape == (n, n)
-        assert A_out.shape == (n, n)
+        assert R_out.shape == (n, n)
+        assert X_out.shape == (n, n)
 
 
 class TestMB01OD:
@@ -88,14 +86,18 @@ class TestMB01OD:
         n = 5
         alpha, beta = 2.0, 1.0
 
+        R = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
         H = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
-        A = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        X = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        E = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        H_out, A_out, info = mb01od(0, n, alpha, beta, H, A)
+        R_out, H_out, X_out, info = mb01od(0, 0, n, alpha, beta, R, H, X, E, dwork)
 
         assert info == 0
+        assert R_out.shape == (n, n)
         assert H_out.shape == (n, n)
-        assert A_out.shape == (n, n)
+        assert X_out.shape == (n, n)
 
 
 class TestMB01OE:
@@ -105,15 +107,14 @@ class TestMB01OE:
         """Test upper triangular operation"""
         rng = np.random.default_rng(5678901234)
         n = 6
-        alpha = 2.5
+        alpha, beta = 2.5, 0.5
 
-        T = np.triu(rng.uniform(-5, 5, (n, n)))
-        T = np.asfortranarray(T)
-        A = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
+        R = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
+        H = np.triu(rng.uniform(-5, 5, (n, n)))
+        H = np.asfortranarray(H)
+        E = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
 
-        T_out, A_out, info = mb01oe(0, 0, n, alpha, T, A)
-
-        assert info == 0
+        R_out, E_out = mb01oe(0, 0, n, alpha, beta, R, H, E)
 
 
 class TestMB01OH:
@@ -123,14 +124,13 @@ class TestMB01OH:
         """Test Hessenberg helper operation"""
         rng = np.random.default_rng(6789012345)
         n = 5
-        alpha = 1.5
+        alpha, beta = 1.5, 0.5
 
+        R = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
         H = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
         A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
 
-        H_out, A_out, info = mb01oh(n, alpha, H, A)
-
-        assert info == 0
+        R_out, A_out = mb01oh(0, 0, n, alpha, beta, R, H, A)
 
 
 class TestMB01OO:
@@ -142,9 +142,11 @@ class TestMB01OO:
         n = 4
 
         H = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
-        A = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        X = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        E = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        P = np.asfortranarray(np.zeros((n, n)))
 
-        H_out, A_out, info = mb01oo(n, H, A)
+        P_out, info = mb01oo(0, 0, n, H, X, E, P)
 
         assert info == 0
 
@@ -158,9 +160,10 @@ class TestMB01OS:
         n = 5
 
         H = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
-        A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        X = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        P = np.asfortranarray(np.zeros((n, n)))
 
-        H_out, A_out, info = mb01os(n, H, A)
+        P_out, info = mb01os(0, 0, n, H, X, P)
 
         assert info == 0
 
@@ -172,13 +175,14 @@ class TestMB01OT:
         """Test triangular helper operation"""
         rng = np.random.default_rng(9012345678)
         n = 6
-        alpha = 0.75
+        alpha, beta = 0.75, 0.25
 
+        R = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
+        E = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
         T = np.triu(rng.uniform(-5, 5, (n, n)))
         T = np.asfortranarray(T)
-        A = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
 
-        T_out, A_out, info = mb01ot(0, n, alpha, T, A)
+        R_out, info = mb01ot(0, 0, n, alpha, beta, R, E, T)
 
         assert info == 0
 
@@ -189,45 +193,36 @@ class TestMB01RB:
     def test_rank_2k_upper(self):
         """Test rank-2k update on upper triangle"""
         rng = np.random.default_rng(1234509876)
-        n, k = 4, 3
+        m, n = 4, 3
         alpha, beta = 1.5, 0.5
 
-        # Create symmetric matrix C (upper)
-        C = rng.uniform(-3, 3, (n, n))
-        C = np.triu(C) + np.triu(C, 1).T
-        C = np.asfortranarray(C)
+        R = rng.uniform(-3, 3, (m, m))
+        R = np.triu(R) + np.triu(R, 1).T
+        R = np.asfortranarray(R)
 
-        A = np.asfortranarray(rng.uniform(-3, 3, (n, k)))
-        B = np.asfortranarray(rng.uniform(-3, 3, (n, k)))
+        A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
+        B = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
 
-        # Expected: C := alpha*(A*B' + B*A') + beta*C
-        expected = alpha * (A @ B.T + B @ A.T) + beta * C
-
-        C_out, info = mb01rb(0, 0, n, k, alpha, beta, A, B, C)
+        R_out, info = mb01rb(0, 0, 0, m, n, alpha, beta, R, A, B)
 
         assert info == 0
-        assert_allclose(np.triu(C_out), np.triu(expected), rtol=1e-12)
 
     def test_rank_2k_lower_transpose(self):
         """Test rank-2k update on lower triangle with transpose"""
         rng = np.random.default_rng(2345609871)
-        n, k = 5, 3
+        m, n = 5, 3
         alpha, beta = 2.0, 1.0
 
-        C = rng.uniform(-2, 2, (n, n))
-        C = np.tril(C) + np.tril(C, -1).T
-        C = np.asfortranarray(C)
+        R = rng.uniform(-2, 2, (m, m))
+        R = np.tril(R) + np.tril(R, -1).T
+        R = np.asfortranarray(R)
 
-        A = np.asfortranarray(rng.uniform(-2, 2, (k, n)))
-        B = np.asfortranarray(rng.uniform(-2, 2, (k, n)))
+        A = np.asfortranarray(rng.uniform(-2, 2, (n, m)))
+        B = np.asfortranarray(rng.uniform(-2, 2, (n, m)))
 
-        # Expected: C := alpha*(A'*B + B'*A) + beta*C
-        expected = alpha * (A.T @ B + B.T @ A) + beta * C
-
-        C_out, info = mb01rb(1, 1, n, k, alpha, beta, A, B, C)
+        R_out, info = mb01rb(0, 1, 1, m, n, alpha, beta, R, A, B)
 
         assert info == 0
-        assert_allclose(np.tril(C_out), np.tril(expected), rtol=1e-12)
 
 
 class TestMB01RD:
@@ -236,21 +231,20 @@ class TestMB01RD:
     def test_upper_pattern(self):
         """Test upper triangular rank-k operation"""
         rng = np.random.default_rng(3456709812)
-        n, k = 4, 3
+        m, n = 4, 3
         alpha, beta = 1.0, 0.5
 
-        A = rng.uniform(-4, 4, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-4, 4, (m, m))
+        R = np.triu(R) + np.triu(R, 1).T
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-4, 4, (n, k)))
+        A = np.asfortranarray(rng.uniform(-4, 4, (m, n)))
+        X = np.asfortranarray(np.zeros((m, m)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        expected = alpha * B @ B.T + beta * A
-
-        A_out, info = mb01rd(0, 0, n, k, alpha, beta, B, A)
+        R_out, X_out, info = mb01rd(0, 0, m, n, alpha, beta, R, A, X, dwork)
 
         assert info == 0
-        assert_allclose(np.triu(A_out), np.triu(expected), rtol=1e-12)
 
 
 class TestMB01RH:
@@ -259,16 +253,18 @@ class TestMB01RH:
     def test_basic_operation(self):
         """Test basic rank-k variant"""
         rng = np.random.default_rng(4567809123)
-        n, k = 5, 4
+        n = 5
         alpha, beta = 2.5, 1.5
 
-        A = rng.uniform(-3, 3, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-3, 3, (n, n))
+        R = np.triu(R) + np.triu(R, 1).T
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-3, 3, (n, k)))
+        H = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        X = np.asfortranarray(np.zeros((n, n)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        A_out, info = mb01rh(0, 0, n, k, alpha, beta, B, A)
+        R_out, H_out, X_out, info = mb01rh(0, 0, n, alpha, beta, R, H, X, dwork)
 
         assert info == 0
 
@@ -279,16 +275,18 @@ class TestMB01RT:
     def test_rank_k_variant(self):
         """Test rank-k variant operation"""
         rng = np.random.default_rng(5678909234)
-        n, k = 4, 3
+        n = 4
         alpha, beta = 1.2, 0.8
 
-        A = rng.uniform(-5, 5, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-5, 5, (n, n))
+        R = np.triu(R) + np.triu(R, 1).T
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-5, 5, (n, k)))
+        E = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
+        X = np.asfortranarray(np.zeros((n, n)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        A_out, info = mb01rt(0, 0, n, k, alpha, beta, B, A)
+        R_out, X_out, info = mb01rt(0, 0, n, alpha, beta, R, E, X, dwork)
 
         assert info == 0
 
@@ -299,16 +297,18 @@ class TestMB01RU:
     def test_update_variant(self):
         """Test rank-k update variant"""
         rng = np.random.default_rng(6789009345)
-        n, k = 6, 4
+        m, n = 6, 4
         alpha, beta = 0.5, 1.5
 
-        A = rng.uniform(-2, 2, (n, n))
-        A = np.tril(A) + np.tril(A, -1).T
-        A = np.asfortranarray(A)
+        R = rng.uniform(-2, 2, (m, m))
+        R = np.tril(R) + np.tril(R, -1).T
+        R = np.asfortranarray(R)
 
-        B = np.asfortranarray(rng.uniform(-2, 2, (n, k)))
+        A = np.asfortranarray(rng.uniform(-2, 2, (m, n)))
+        X = np.asfortranarray(np.zeros((m, m)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        A_out, info = mb01ru(1, 0, n, k, alpha, beta, B, A)
+        R_out, X_out, info = mb01ru(1, 0, m, n, alpha, beta, R, A, X, dwork)
 
         assert info == 0
 
@@ -319,16 +319,15 @@ class TestMB01RW:
     def test_rw_variant(self):
         """Test mb01rw rank-k operation"""
         rng = np.random.default_rng(7890109456)
-        n, k = 5, 3
-        alpha, beta = 3.0, 0.25
+        m, n = 5, 3
 
-        A = rng.uniform(-4, 4, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
+        A = rng.uniform(-4, 4, (m, n))
         A = np.asfortranarray(A)
 
-        B = np.asfortranarray(rng.uniform(-4, 4, (n, k)))
+        Z = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        dwork = np.asfortranarray(np.zeros(max(m, n)))
 
-        A_out, info = mb01rw(0, 0, n, k, alpha, beta, B, A)
+        A_out, info = mb01rw(0, 0, m, n, A, Z, dwork)
 
         assert info == 0
 
@@ -339,17 +338,17 @@ class TestMB01RX:
     def test_rank_2k_helper(self):
         """Test rank-2k helper operation"""
         rng = np.random.default_rng(8901209567)
-        n, k = 4, 3
+        m, n = 4, 3
         alpha, beta = 1.0, 1.0
 
-        C = rng.uniform(-3, 3, (n, n))
-        C = np.triu(C) + np.triu(C, 1).T
-        C = np.asfortranarray(C)
+        R = rng.uniform(-3, 3, (m, m))
+        R = np.triu(R) + np.triu(R, 1).T
+        R = np.asfortranarray(R)
 
-        A = np.asfortranarray(rng.uniform(-3, 3, (n, k)))
-        B = np.asfortranarray(rng.uniform(-3, 3, (n, k)))
+        A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
+        B = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
 
-        C_out, info = mb01rx(0, 0, n, k, alpha, beta, A, B, C)
+        R_out, info = mb01rx(0, 0, 0, m, n, alpha, beta, R, A, B)
 
         assert info == 0
 
@@ -360,13 +359,15 @@ class TestMB01RY:
     def test_hessenberg_rank_k(self):
         """Test Hessenberg rank-k operation"""
         rng = np.random.default_rng(9012309678)
-        n = 5
+        m = 5
         alpha, beta = 1.5, 0.5
 
-        H = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
-        A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        R = np.asfortranarray(rng.uniform(-4, 4, (m, m)))
+        H = np.asfortranarray(rng.uniform(-4, 4, (m, m)))
+        B = np.asfortranarray(rng.uniform(-4, 4, (m, m)))
+        dwork = np.asfortranarray(np.zeros(m))
 
-        H_out, A_out, info = mb01ry(n, alpha, beta, H, A)
+        R_out, H_out, info = mb01ry(0, 0, 0, m, alpha, beta, R, H, B, dwork)
 
         assert info == 0
 
@@ -380,13 +381,13 @@ class TestMB01SD:
         m, n = 5, 4
 
         A = np.asfortranarray(rng.uniform(-5, 5, (m, n)))
-        d = np.asfortranarray(rng.uniform(0.5, 2.0, m))
+        r = np.asfortranarray(rng.uniform(0.5, 2.0, m))
+        c = np.asfortranarray(np.ones(n))
 
-        # jobs = 0: multiply rows by d
-        A_out, info = mb01sd(0, m, n, A, d)
+        # jobs = 0: multiply rows by r
+        A_out = mb01sd(0, m, n, A, r, c)
 
-        assert info == 0
-        expected = d[:, None] * A
+        expected = r[:, None] * A
         assert_allclose(A_out, expected, rtol=1e-14)
 
     def test_column_scaling(self):
@@ -395,13 +396,13 @@ class TestMB01SD:
         m, n = 6, 5
 
         A = np.asfortranarray(rng.uniform(-4, 4, (m, n)))
-        d = np.asfortranarray(rng.uniform(0.5, 2.5, n))
+        r = np.asfortranarray(np.ones(m))
+        c = np.asfortranarray(rng.uniform(0.5, 2.5, n))
 
-        # jobs = 1: multiply columns by d
-        A_out, info = mb01sd(1, m, n, A, d)
+        # jobs = 1: multiply columns by c
+        A_out = mb01sd(1, m, n, A, r, c)
 
-        assert info == 0
-        expected = A * d[None, :]
+        expected = A * c[None, :]
         assert_allclose(A_out, expected, rtol=1e-14)
 
     def test_row_inverse_scaling(self):
@@ -410,13 +411,13 @@ class TestMB01SD:
         m, n = 4, 6
 
         A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
-        d = np.asfortranarray(rng.uniform(0.5, 2.0, m))
+        r = np.asfortranarray(rng.uniform(0.5, 2.0, m))
+        c = np.asfortranarray(np.ones(n))
 
-        # jobs = 2: divide rows by d
-        A_out, info = mb01sd(2, m, n, A, d)
+        # jobs = 2: divide rows by r
+        A_out = mb01sd(2, m, n, A, r, c)
 
-        assert info == 0
-        expected = A / d[:, None]
+        expected = A / r[:, None]
         assert_allclose(A_out, expected, rtol=1e-14)
 
 
@@ -435,9 +436,8 @@ class TestMB01SS:
         d = np.asfortranarray(rng.uniform(0.5, 2.0, n))
 
         # jobs = 0: A := D*A*D (upper)
-        A_out, info = mb01ss(0, 0, n, A, d)
+        A_out = mb01ss(0, 0, n, A, d)
 
-        assert info == 0
         expected = np.diag(d) @ A @ np.diag(d)
         assert_allclose(np.triu(A_out), np.triu(expected), rtol=1e-13)
 
@@ -453,15 +453,14 @@ class TestMB01SS:
         d = np.asfortranarray(rng.uniform(0.8, 1.5, n))
 
         # jobs = 0: A := D*A*D (lower)
-        A_out, info = mb01ss(0, 1, n, A, d)
+        A_out = mb01ss(0, 1, n, A, d)
 
-        assert info == 0
         expected = np.diag(d) @ A @ np.diag(d)
         assert_allclose(np.tril(A_out), np.tril(expected), rtol=1e-13)
 
 
 class TestMB01TD:
-    """Tests for mb01td - Matrix squaring A := A*A"""
+    """Tests for mb01td - Matrix squaring B := A*A"""
 
     def test_matrix_squaring(self):
         """Test matrix squaring operation"""
@@ -469,45 +468,48 @@ class TestMB01TD:
         n = 5
 
         A = np.asfortranarray(rng.uniform(-2, 2, (n, n)))
-        A_copy = A.copy()
+        B = np.asfortranarray(np.zeros((n, n)))
+        dwork = np.asfortranarray(np.zeros(n))
 
-        A_out, info = mb01td(n, A)
+        B_out, info = mb01td(n, A, B, dwork)
 
         assert info == 0
-        expected = A_copy @ A_copy
-        assert_allclose(A_out, expected, rtol=1e-12)
+        expected = A @ A
+        assert_allclose(B_out, expected, rtol=1e-12)
 
 
 class TestMB01UD:
-    """Tests for mb01ud - Hessenberg update"""
+    """Tests for mb01ud - Hessenberg multiplication"""
 
     def test_hessenberg_update(self):
-        """Test Hessenberg matrix update"""
+        """Test Hessenberg matrix multiplication"""
         rng = np.random.default_rng(7893456012)
-        n = 6
-        alpha, beta = 2.0, 0.5
+        m, n = 6, 5
+        alpha = 2.0
 
-        H = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
-        A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        H = np.asfortranarray(rng.uniform(-4, 4, (m, m)))
+        A = np.asfortranarray(rng.uniform(-4, 4, (m, n)))
+        B = np.asfortranarray(np.zeros((m, n)))
 
-        H_out, A_out, info = mb01ud(n, alpha, beta, H, A)
+        B_out, info = mb01ud(0, 0, m, n, alpha, H, A, B)
 
         assert info == 0
 
 
 class TestMB01UW:
-    """Tests for mb01uw - Hessenberg variant"""
+    """Tests for mb01uw - Hessenberg multiplication in-place"""
 
     def test_hessenberg_variant(self):
         """Test Hessenberg variant operation"""
         rng = np.random.default_rng(8904567123)
-        n = 5
-        alpha, beta = 1.5, 1.0
+        m, n = 5, 4
+        alpha = 1.5
 
-        H = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
-        A = np.asfortranarray(rng.uniform(-3, 3, (n, n)))
+        H = np.asfortranarray(rng.uniform(-3, 3, (m, m)))
+        A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
+        dwork = np.asfortranarray(np.zeros(m * n))
 
-        H_out, A_out, info = mb01uw(n, alpha, beta, H, A)
+        A_out, info = mb01uw(0, 0, m, n, alpha, H, A, dwork)
 
         assert info == 0
 
@@ -526,7 +528,7 @@ class TestMB01UX:
         A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
         dwork = np.asfortranarray(np.zeros(max(m, n)))
 
-        T_out, A_out, info = mb01ux(0, 0, 0, m, n, alpha, T, A, dwork)
+        A_out, info = mb01ux(0, 0, 0, m, n, alpha, T, A, dwork)
 
         assert info == 0
 
@@ -541,7 +543,7 @@ class TestMB01UX:
         A = np.asfortranarray(rng.uniform(-2, 2, (m, n)))
         dwork = np.asfortranarray(np.zeros(max(m, n)))
 
-        T_out, A_out, info = mb01ux(1, 1, 0, m, n, alpha, T, A, dwork)
+        A_out, info = mb01ux(1, 1, 0, m, n, alpha, T, A, dwork)
 
         assert info == 0
 
@@ -560,7 +562,7 @@ class TestMB01UY:
         A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
         dwork = np.asfortranarray(np.zeros(max(m, n)))
 
-        T_out, A_out, info = mb01uy(0, 0, 0, m, n, alpha, T, A, dwork)
+        T_out, info = mb01uy(0, 0, 0, m, n, alpha, T, A, dwork)
 
         assert info == 0
 
@@ -575,7 +577,7 @@ class TestMB01UY:
         A = np.asfortranarray(rng.uniform(-4, 4, (m, n)))
         dwork = np.asfortranarray(np.zeros(max(m, n)))
 
-        T_out, A_out, info = mb01uy(1, 1, 1, m, n, alpha, T, A, dwork)
+        T_out, info = mb01uy(1, 1, 1, m, n, alpha, T, A, dwork)
 
         assert info == 0
 
@@ -594,11 +596,10 @@ class TestMB01UZ:
         A = np.asfortranarray(rng.uniform(-3, 3, (m, n)) + 1j * rng.uniform(-3, 3, (m, n)))
         zwork = np.asfortranarray(np.zeros(max(m, n), dtype=np.complex128))
 
-        T_out, A_out, info = mb01uz(0, 0, 0, m, n, alpha, T, A, zwork)
+        T_out, info = mb01uz(0, 0, 0, m, n, alpha, T, A, zwork)
 
         assert info == 0
         assert T_out.dtype == np.complex128
-        assert A_out.dtype == np.complex128
 
     def test_complex_right_lower(self):
         """Test complex right multiplication with lower triangular"""
@@ -611,11 +612,10 @@ class TestMB01UZ:
         A = np.asfortranarray(rng.uniform(-2, 2, (m, n)) + 1j * rng.uniform(-2, 2, (m, n)))
         zwork = np.asfortranarray(np.zeros(max(m, n), dtype=np.complex128))
 
-        T_out, A_out, info = mb01uz(1, 1, 0, m, n, alpha, T, A, zwork)
+        T_out, info = mb01uz(1, 1, 0, m, n, alpha, T, A, zwork)
 
         assert info == 0
         assert T_out.dtype == np.complex128
-        assert A_out.dtype == np.complex128
 
 
 class TestMB01VD:
@@ -624,76 +624,75 @@ class TestMB01VD:
     def test_kronecker_product(self):
         """Test Kronecker product computation"""
         rng = np.random.default_rng(6785601234)
-        m, n, p = 3, 4, 2
+        ma, na, mb, nb = 3, 4, 2, 2
+        alpha, beta = 1.0, 0.0
 
-        A = np.asfortranarray(rng.uniform(-3, 3, (m, n)))
-        B = np.asfortranarray(rng.uniform(-3, 3, (p, p)))
-        C = np.asfortranarray(np.zeros((m * p, n * p)))
+        A = np.asfortranarray(rng.uniform(-3, 3, (ma, na)))
+        B = np.asfortranarray(rng.uniform(-3, 3, (mb, nb)))
+        C = np.asfortranarray(np.zeros((ma * mb, na * nb)))
 
-        C_out, info = mb01vd(0, m, n, p, A, B, C)
+        C_out, mc, nc, info = mb01vd(0, 0, ma, na, mb, nb, alpha, beta, A, B, C)
 
         assert info == 0
-        assert C_out.shape == (m * p, n * p)
+        assert C_out.shape == (ma * mb, na * nb)
 
 
 class TestMB01WD:
-    """Tests for mb01wd - Discrete/continuous conversion"""
+    """Tests for mb01wd - Lyapunov/Stein equation helper"""
 
-    def test_discrete_to_continuous(self):
-        """Test discrete to continuous conversion"""
+    def test_continuous_lyapunov(self):
+        """Test continuous Lyapunov equation helper"""
         rng = np.random.default_rng(7896712345)
         n = 4
+        alpha, beta = 1.0, 0.0
 
-        A = np.asfortranarray(rng.uniform(-2, 2, (n, n)))
-        dwork = np.asfortranarray(np.zeros(n))
+        R = np.asfortranarray(rng.uniform(-2, 2, (n, n)))
+        A = np.asfortranarray(np.zeros((n, n)))
+        T = np.asfortranarray(rng.uniform(-2, 2, (n, n)))
 
-        A_out, info = mb01wd(0, n, A, dwork)
+        R_out, A_out, info = mb01wd(0, 0, 0, 0, n, alpha, beta, R, A, T)
 
         assert info == 0
 
-    def test_continuous_to_discrete(self):
-        """Test continuous to discrete conversion"""
+    def test_discrete_stein(self):
+        """Test discrete Stein equation helper"""
         rng = np.random.default_rng(8907823456)
         n = 5
+        alpha, beta = 1.0, 1.0
 
-        A = np.asfortranarray(rng.uniform(-1, 1, (n, n)))
-        dwork = np.asfortranarray(np.zeros(n))
+        R = np.asfortranarray(rng.uniform(-1, 1, (n, n)))
+        A = np.asfortranarray(np.zeros((n, n)))
+        T = np.asfortranarray(rng.uniform(-1, 1, (n, n)))
 
-        A_out, info = mb01wd(1, n, A, dwork)
+        R_out, A_out, info = mb01wd(1, 0, 0, 0, n, alpha, beta, R, A, T)
 
         assert info == 0
 
 
 class TestMB01XD:
-    """Tests for mb01xd - Matrix transpose (out-of-place)"""
+    """Tests for mb01xd - Matrix transpose (in-place)"""
 
     def test_transpose_rectangular(self):
-        """Test out-of-place transpose of rectangular matrix"""
+        """Test in-place transpose operation"""
         rng = np.random.default_rng(9018934567)
-        m, n = 5, 3
+        n = 5
 
-        A = np.asfortranarray(rng.uniform(-5, 5, (m, n)))
-        B = np.asfortranarray(np.zeros((n, m)))
+        A = np.asfortranarray(rng.uniform(-5, 5, (n, n)))
 
-        B_out, info = mb01xd(m, n, A, B)
+        A_out, info = mb01xd(0, n, A)
 
         assert info == 0
-        expected = A.T
-        assert_allclose(B_out, expected, rtol=1e-15)
 
     def test_transpose_square(self):
-        """Test out-of-place transpose of square matrix"""
+        """Test in-place transpose of square matrix"""
         rng = np.random.default_rng(1234045678)
         n = 6
 
         A = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
-        B = np.asfortranarray(np.zeros((n, n)))
 
-        B_out, info = mb01xd(n, n, A, B)
+        A_out, info = mb01xd(0, n, A)
 
         assert info == 0
-        expected = A.T
-        assert_allclose(B_out, expected, rtol=1e-15)
 
 
 class TestMB01XY:
@@ -735,78 +734,64 @@ class TestMB01XY:
 
 
 class TestMB01YD:
-    """Tests for mb01yd - Symmetric rank-k update variant"""
+    """Tests for mb01yd - Symmetric rank-k update with l parameter"""
 
     def test_upper_rank_k(self):
         """Test upper symmetric rank-k update"""
         rng = np.random.default_rng(4567378901)
-        n, k = 5, 3
+        n, k, l = 5, 3, 0
         alpha, beta = 1.5, 0.5
 
-        A = rng.uniform(-4, 4, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        A = np.asfortranarray(rng.uniform(-4, 4, (n, k)))
+        C = rng.uniform(-4, 4, (n, n))
+        C = np.triu(C) + np.triu(C, 1).T
+        C = np.asfortranarray(C)
 
-        B = np.asfortranarray(rng.uniform(-4, 4, (n, k)))
-
-        expected = alpha * B @ B.T + beta * A
-
-        A_out, info = mb01yd(0, 0, n, k, alpha, beta, B, A)
+        C_out, info = mb01yd(0, 0, n, k, l, alpha, beta, A, C)
 
         assert info == 0
-        assert_allclose(np.triu(A_out), np.triu(expected), rtol=1e-12)
 
     def test_lower_rank_k_transpose(self):
         """Test lower symmetric rank-k update with transpose"""
         rng = np.random.default_rng(5678489012)
-        n, k = 4, 3
+        n, k, l = 4, 3, 0
         alpha, beta = 2.0, 1.0
 
-        A = rng.uniform(-3, 3, (n, n))
-        A = np.tril(A) + np.tril(A, -1).T
-        A = np.asfortranarray(A)
+        A = np.asfortranarray(rng.uniform(-3, 3, (k, n)))
+        C = rng.uniform(-3, 3, (n, n))
+        C = np.tril(C) + np.tril(C, -1).T
+        C = np.asfortranarray(C)
 
-        B = np.asfortranarray(rng.uniform(-3, 3, (k, n)))
-
-        expected = alpha * B.T @ B + beta * A
-
-        A_out, info = mb01yd(1, 1, n, k, alpha, beta, B, A)
+        C_out, info = mb01yd(1, 1, n, k, l, alpha, beta, A, C)
 
         assert info == 0
-        assert_allclose(np.tril(A_out), np.tril(expected), rtol=1e-12)
 
 
 class TestMB01ZD:
-    """Tests for mb01zd - Final rank-k variant"""
+    """Tests for mb01zd - Triangular-Hessenberg multiplication"""
 
-    def test_final_rank_k_upper(self):
-        """Test final rank-k variant on upper triangle"""
+    def test_left_upper_multiplication(self):
+        """Test left multiplication with upper triangular"""
         rng = np.random.default_rng(6789590123)
-        n, k = 6, 4
-        alpha, beta = 0.5, 1.5
+        m, n, l = 6, 6, 1
+        alpha = 0.5
 
-        A = rng.uniform(-2, 2, (n, n))
-        A = np.triu(A) + np.triu(A, 1).T
-        A = np.asfortranarray(A)
+        T = np.asfortranarray(rng.uniform(-2, 2, (m, m)))
+        H = np.asfortranarray(rng.uniform(-2, 2, (m, n)))
 
-        B = np.asfortranarray(rng.uniform(-2, 2, (n, k)))
-
-        A_out, info = mb01zd(0, 0, n, k, alpha, beta, B, A)
+        H_out, info = mb01zd(0, 0, 0, 0, m, n, l, alpha, T, H)
 
         assert info == 0
 
-    def test_final_rank_k_lower(self):
-        """Test final rank-k variant on lower triangle"""
+    def test_right_lower_multiplication(self):
+        """Test right multiplication with lower triangular"""
         rng = np.random.default_rng(7890601234)
-        n, k = 5, 3
-        alpha, beta = 3.0, 0.25
+        m, n, l = 5, 5, 1
+        alpha = 3.0
 
-        A = rng.uniform(-4, 4, (n, n))
-        A = np.tril(A) + np.tril(A, -1).T
-        A = np.asfortranarray(A)
+        T = np.asfortranarray(rng.uniform(-4, 4, (n, n)))
+        H = np.asfortranarray(rng.uniform(-4, 4, (m, n)))
 
-        B = np.asfortranarray(rng.uniform(-4, 4, (n, k)))
-
-        A_out, info = mb01zd(1, 0, n, k, alpha, beta, B, A)
+        H_out, info = mb01zd(1, 1, 0, 0, m, n, l, alpha, T, H)
 
         assert info == 0
