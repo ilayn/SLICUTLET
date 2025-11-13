@@ -27,10 +27,15 @@ This directory contains tools for analyzing dependencies in SLICOT Fortran 77 so
 
 ### Usage
 
+**Prerequisites:**
+```bash
+source .venv/bin/activate
+```
+
 #### Show Overall Summary
 
 ```bash
-uv run tools/extract_dependencies.py SLICOT-Reference/src/
+python tools/extract_dependencies.py SLICOT-Reference/src/
 ```
 
 Output:
@@ -42,7 +47,7 @@ Output:
 #### Analyze Specific Routine
 
 ```bash
-uv run tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
+python tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
 ```
 
 Output:
@@ -54,7 +59,7 @@ Output:
 #### Analyze Single File
 
 ```bash
-uv run tools/extract_dependencies.py SLICOT-Reference/src/MB01PD.f
+python tools/extract_dependencies.py SLICOT-Reference/src/MB01PD.f
 ```
 
 ### Examples
@@ -62,7 +67,7 @@ uv run tools/extract_dependencies.py SLICOT-Reference/src/MB01PD.f
 **Example 1: Finding leaf routines to translate first**
 
 ```bash
-$ uv run tools/extract_dependencies.py SLICOT-Reference/src/ | grep "Level 0"
+$ python tools/extract_dependencies.py SLICOT-Reference/src/ | grep "Level 0"
 Level 0: 297 routines
   (Leaf routines - no SLICOT dependencies, only BLAS/LAPACK)
 ```
@@ -72,7 +77,7 @@ Level 0: 297 routines
 **Example 2: Understanding AB01MD dependencies**
 
 ```bash
-$ uv run tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
+$ python tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
 
 ================================================================================
 ROUTINE: AB01MD
@@ -105,7 +110,7 @@ LAPACK/BLAS Dependencies (5):
 **Example 3: Finding what depends on MB03QY**
 
 ```bash
-$ uv run tools/extract_dependencies.py SLICOT-Reference/src/ MB03QY
+$ python tools/extract_dependencies.py SLICOT-Reference/src/ MB03QY
 
 Used By (25 routines):
   MB03QD
@@ -247,7 +252,7 @@ SLC_DGESV(&n, &nrhs, a, &lda, ipiv, b, &ldb, &info);
 
 1. **Check dependencies**:
    ```bash
-   uv run tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
+   python tools/extract_dependencies.py SLICOT-Reference/src/ AB01MD
    ```
 
 2. **Ensure SLICOT dependencies are translated**:
@@ -299,7 +304,7 @@ SLC_DGESV(&n, &nrhs, a, &lda, ipiv, b, &ldb, &info);
 
 9. **Run tests**:
    ```bash
-   uv run pytest python/tests/test_ab01xx.py -v
+   pytest python/tests/test_ab01xx.py -v
    ```
 
 ### Workflow Integration
@@ -308,7 +313,7 @@ SLC_DGESV(&n, &nrhs, a, &lda, ipiv, b, &ldb, &info);
 
 ```bash
 # Find all leaf routines
-uv run tools/extract_dependencies.py SLICOT-Reference/src/ > dependency_report.txt
+python tools/extract_dependencies.py SLICOT-Reference/src/ > dependency_report.txt
 
 # Look for Level 0 routines in your chapter of interest (e.g., AB)
 grep "AB.*Level 0" dependency_report.txt
@@ -318,14 +323,14 @@ grep "AB.*Level 0" dependency_report.txt
 
 ```bash
 # Before translating AB05ND, check its dependencies
-uv run tools/extract_dependencies.py SLICOT-Reference/src/ AB05ND
+python tools/extract_dependencies.py SLICOT-Reference/src/ AB05ND
 ```
 
 #### Step 3: Plan LAPACK/BLAS Calls
 
 ```bash
 # Collect all LAPACK dependencies for a routine
-uv run tools/extract_dependencies.py SLICOT-Reference/src/ AB05ND | grep "LAPACK"
+python tools/extract_dependencies.py SLICOT-Reference/src/ AB05ND | grep "LAPACK"
 ```
 
 **Output**:

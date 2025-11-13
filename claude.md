@@ -7,16 +7,41 @@ C11 translation of SLICOT (Systems and Control library) from Fortran77.
 
 ## Build & Test
 
-**Build:**
+**Setup (first time):**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[test,dev]"
+pip install meson ninja meson-python
+```
+
+**Activate venv (each session):**
+```bash
+source .venv/bin/activate
+```
+
+**Build (first time):**
 ```bash
 meson setup build -Dpython=true
 meson compile -C build
-meson install -C build --destdir="$(pwd)/build-install"
+meson install -C build --destdir=$PWD/build-install
+```
+
+**Rebuild (iterative development - auto-detects changes):**
+```bash
+meson compile -C build
+meson install -C build --destdir=$PWD/build-install
+```
+
+**Clean rebuild (when needed):**
+```bash
+meson compile -C build --clean
+meson install -C build --destdir=$PWD/build-install
 ```
 
 **Test:**
 ```bash
-PYTHONPATH=build-install/usr/local/lib/python3.11/site-packages pytest python/tests/
+DYLD_LIBRARY_PATH=build-install/usr/local/lib PYTHONPATH=build-install/usr/local/lib/python3.11/site-packages pytest python/tests/
 ```
 
 ## Code Structure
@@ -58,6 +83,7 @@ PYTHONPATH=build-install/usr/local/lib/python3.11/site-packages pytest python/te
 
 ### Dependency Analysis
 ```bash
+# With venv activated
 python tools/extract_dependencies.py SLICOT-Reference/src/ AB01ND    # Specific
 python tools/extract_dependencies.py SLICOT-Reference/src/           # Full
 python tools/extract_dependencies.py SLICOT-Reference/src/ | grep "Level 0"  # Leaves

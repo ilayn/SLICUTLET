@@ -721,7 +721,8 @@ def test_ab01md():
 ### Step 10: Run Tests
 
 ```bash
-uv run pytest python/tests/test_ab01xx.py -v
+# With venv activated
+DYLD_LIBRARY_PATH=build-install/usr/local/lib PYTHONPATH=build-install/usr/local/lib/python3.11/site-packages pytest python/tests/test_ab01xx.py -v
 ```
 
 ## Common Translation Challenges
@@ -910,14 +911,18 @@ class TestAB01MD:
 ### Running Tests
 
 ```bash
+# With venv activated and library paths set
+export DYLD_LIBRARY_PATH=build-install/usr/local/lib
+export PYTHONPATH=build-install/usr/local/lib/python3.11/site-packages
+
 # All tests
-uv run pytest python/tests/
+pytest python/tests/
 
 # Single file
-uv run pytest -v python/tests/test_mb01xx.py
+pytest -v python/tests/test_mb01xx.py
 
 # Specific test
-uv run pytest -v python/tests/test_ma01xx.py::TestMA01AD::test_positive_real_positive_imag
+pytest -v python/tests/test_ma01xx.py::TestMA01AD::test_positive_real_positive_imag
 ```
 
 ## Quick Reference
