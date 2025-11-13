@@ -1,8 +1,9 @@
 py = import('python').find_installation()
 
+# Get numpy include path as relative path (works with in-tree venv)
 numpy_include_result = run_command(
     py,
-    ['-c', 'import numpy; print(numpy.get_include())'],
+    ['-c', 'import os; import numpy; print(os.path.relpath(numpy.get_include()))'],
     check: true
 )
 incdir_numpy = numpy_include_result.stdout().strip()
